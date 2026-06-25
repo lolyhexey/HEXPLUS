@@ -753,7 +753,7 @@ refresh_pattern .               0       20%     4320
 						echo $crt
 						echo $crt
 						echo $crt
-					) | openssl req -new -x509 -key key.pem -out cert.pem -days 1050 >/dev/null 2>&1
+					) | openssl req -new -x509 -key key.pem -out cert.pem -days 36500 >/dev/null 2>&1
 					cat cert.pem key.pem >>/etc/stunnel/stunnel.pem
 					rm key.pem cert.pem >/dev/null 2>&1
 					sed -i 's/ENABLED=0/ENABLED=1/g' /etc/default/stunnel4
