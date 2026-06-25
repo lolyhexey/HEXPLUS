@@ -5,7 +5,7 @@ read -p "ต้องการลบหรือไม่? [s/n] " resp
 if [[ "$resp" = s || "$resp" = S || "$resp" = y || "$resp" = Y ]];then
     echo -e "\033[1;33mกำลังหยุดบริการและ screen sessions...\033[0m"
     # Stop screen sessions
-    screen -ls 2>/dev/null | grep -E 'limiter|onlineapp|bot_plus|bot_teste|badudp|slowdns' | awk '{print $1}' | while read s; do
+    screen -ls 2>/dev/null | grep -E 'limiter|onlineapp|bot_plus|bot_teste|badudp' | awk '{print $1}' | while read s; do
         screen -X -S "$s" quit > /dev/null 2>&1
     done
     screen -wipe > /dev/null 2>&1
@@ -33,14 +33,6 @@ if [[ "$resp" = s || "$resp" = S || "$resp" = y || "$resp" = Y ]];then
     pkill -9 badvpn-udpgw > /dev/null 2>&1
     rm -f /usr/local/bin/badvpn-udpgw > /dev/null 2>&1
     rm -f /bin/badudp /bin/badvpn > /dev/null 2>&1
-
-    # --- SlowDNS ---
-    systemctl stop slowdns > /dev/null 2>&1
-    systemctl disable slowdns > /dev/null 2>&1
-    pkill -9 dns-server > /dev/null 2>&1
-    rm -rf /etc/slowdns > /dev/null 2>&1
-    rm -f /bin/slowdns > /dev/null 2>&1
-    rm -f /etc/systemd/system/slowdns.service > /dev/null 2>&1
 
     # --- Nginx + PHP ---
     systemctl stop nginx php7.4-fpm > /dev/null 2>&1
