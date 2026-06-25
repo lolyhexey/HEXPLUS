@@ -88,10 +88,6 @@ sleep 3s
 echo "/bin/menu" > /bin/h && chmod +x /bin/h > /dev/null 2>&1
 rm versao* > /dev/null 2>&1
 wget https://kguza.net/sshplus-vip/Install/versao > /dev/null 2>&1
-> /dev/null 2>&1
-wget https://iplogger.org/2lHZ43 > /dev/null 2>&1
-> /dev/null 2>&1
-rm 2lHZ43 > /dev/null 2>&1
 cd > /dev/null 2>&1
 #-----------------------------------------------------------------------------------------------------------------
 echo -e "\n\033[1;32mคีย์ถูกต้อง!\033[1;32m"
