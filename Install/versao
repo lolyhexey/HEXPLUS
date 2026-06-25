@@ -1,5 +1,12 @@
-VERSAO: 38
+VERSAO: 39
 
 @lolyhexey
+
+แก้บั๊ก figlet หาไม่เจอตอนเริ่มต้น Plus
+ปิดเสียง output ที่หลุดมาตอนติดตั้งแพ็กเกจ
+เพิ่ม GPG key ครบ 2 ตัวสำหรับ trusty squid repo
+แก้ permission ของ /var/log/squid3 ให้ proxy user
+เพิ่มไฟล์ EasyRSA-3.0.1.tgz ที่หายไป (OpenVPN ติดตั้งไม่ได้)
+แก้ typo apt-get update-y
 
 --[RECUSE IMITAÇŌES]--
