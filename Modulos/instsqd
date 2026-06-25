@@ -1,0 +1,46 @@
+clear
+op=$1
+[[ ! -d /usr/share/.plus ]] && exit 0
+fun_sqd01() {
+[[ -e /etc/apt/sources.list.d/trusty_sources.list ]] && {
+rm /etc/apt/sources.list.d/trusty_sources.list >/dev/null 2>&1
+[[ $(grep -wc 'Debian' /etc/issue.net) != '0' ]] && {
+apt-key del 3B4FE6ACC0B21F32 >/dev/null 2>&1
+}
+apt remove squid3=3.3.8-1ubuntu6 squid=3.3.8-1ubuntu6 squid3-common=3.3.8-1ubuntu6 -y >/dev/null 2>&1
+apt update -y >/dev/null 2>&1
+apt autoremove -y >/dev/null 2>&1
+}
+apt install squid3 -y >/dev/null 2>&1
+[[ $? != 0 ]] && {
+echo -e "\033[1;31m[ผิดพลาด]\033[1;33m ติดตั้ง Squid ไม่สำเร็จ: คำสั่ง apt install squid3 ล้มเหลว — ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองรัน 'apt update' ก่อนติดตั้งใหม่อีกครั้ง\033[0m"
+}
+}
+fun_sqd02() {
+[[ ! -e /etc/apt/sources.list.d/trusty_sources.list ]] && {
+touch /etc/apt/sources.list.d/trusty_sources.list >/dev/null 2>&1
+echo "deb http://us.archive.ubuntu.com/ubuntu/ trusty main universe" | tee --append /etc/apt/sources.list.d/trusty_sources.list >/dev/null 2>&1
+}
+[[ $(grep -wc 'Debian' /etc/issue.net) != '0' ]] && {
+apt install dirmngr -y >/dev/null 2>&1
+[[ $(apt-key list 2>/dev/null | grep -c 'Ubuntu') == '0' ]] && {
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32 >/dev/null 2>&1
+}
+}
+apt update -y >/dev/null 2>&1
+apt install squid3=3.3.8-1ubuntu6 squid=3.3.8-1ubuntu6 squid3-common=3.3.8-1ubuntu6 -y >/dev/null 2>&1
+[[ $? != 0 ]] && {
+echo -e "\033[1;31m[ผิดพลาด]\033[1;33m ติดตั้ง Squid3 (เวอร์ชัน 3.3.8) ไม่สำเร็จ: คำสั่ง apt install ล้มเหลว — ตรวจสอบว่าเพิ่มคลัง trusty และคีย์ Ubuntu สำเร็จแล้ว จากนั้นรัน 'apt update' แล้วลองใหม่อีกครั้ง\033[0m"
+}
+wget -qO- https://raw.githubusercontent.com/kiritosshxd/SSHPLUS/main/Install/squid3 >/etc/init.d/squid3
+[[ ! -s /etc/init.d/squid3 ]] && {
+echo -e "\033[1;31m[ผิดพลาด]\033[1;33m ดาวน์โหลดสคริปต์บริการ squid3 ไม่สำเร็จ: ไฟล์ /etc/init.d/squid3 ว่างเปล่า — ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตและการเข้าถึง raw.githubusercontent.com แล้วลองใหม่อีกครั้ง\033[0m"
+}
+chmod +x /etc/init.d/squid3 >/dev/null 2>&1
+update-rc.d squid3 defaults >/dev/null 2>&1
+}
+[[ $op == '1' ]] && {
+fun_sqd02
+} || {
+fun_sqd01
+}

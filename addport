@@ -1,0 +1,101 @@
+clear
+cr
+
+[[ "$(whoami)" != "root" ]] && {
+echo -e "\033[1;31m[ผิดพลาด]\033[1;33m จัดการพอร์ต OpenVPN ไม่สำเร็จ: ต้องรันด้วยสิทธิ์ root — ใช้คำสั่ง sudo su ก่อน\033[0m"
+exit 1
+}
+
+if [ -e '/etc/openvpn/okport' ]; then
+if [ -e '/var/lib/vnstat/eth0' ]; then
+iptables -t nat -I POSTROUTING -s 10.9.0.0/24 -o eth0 -j MASQUERADE
+else
+iptables -t nat -I POSTROUTING -s 10.9.0.0/24 -o ens3 -j MASQUERADE
+fi
+iptables -I FORWARD -s 10.9.0.0/24 -j ACCEPT
+
+IP=$(wget -qO- ipv4.icanhazip.com)
+[[ -z "$IP" ]] && {
+echo -e "\033[1;31m[ผิดพลาด]\033[1;33m ตรวจสอบ IP สาธารณะไม่สำเร็จ: เชื่อมต่อ ipv4.icanhazip.com ไม่ได้ — ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต แล้วกรอก IP ด้วยตนเองในช่องถัดไป\033[0m"
+}
+read -p " แก้ไอพีให้ถูกต้อง  : " -e -i $IP IP
+[[ -z "$IP" ]] && {
+echo -e "\033[1;31m[ผิดพลาด]\033[1;33m ตั้งค่า SNAT ไม่สำเร็จ: ไม่ได้กรอก IP — รันคำสั่งอีกครั้งแล้วกรอก IP ของเซิร์ฟเวอร์\033[0m"
+exit 1
+}
+iptables -I FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -t nat -A POSTROUTING -s 10.9.0.0/24 -j SNAT --to-source $IP
+iptables-save > /etc/iptables.conf
+rm -r -f /etc/openvpn/okport
+fi
+
+echo "┈┣━━━━━━━━━━━━━━━━━━━━╮ 
+┈┣ 🚫 คำเตือน 
+┈┣ หากมีการเกิดปัญหาใดๆ ในการใช้คำสั่งนี้               
+┈┣ ทางเราไม่รับผิดชอบปัญหาใดๆที่เกิดขึ้น                
+┈┣━━━━━━━━━━━━━━━━━━━━╯       
+┈╭━━━━━━━━━━━━━━━━━━━━╮  "
+if [[ -e '/etc/openvpn/443' && -e '/etc/openvpn/1194' ]]; then
+echo "┈┣ สถานะ ปัจจุบันเปิดพอต 1194 กับ 443       
+┈┣ เลือกพอตที่ต้องการจะปิด
+┈┣━━━━━━━━━━━━━━━━━━━━╯ 
+┈┣ 1.  ปิดพอต 1194                      
+┈┣ 2.  ปิดพอต  443                                       
+┈┣ 3.  ยกเลิก                      "
+read -p "┈╰━┫พิมพ์เลข   :  " selet
+if [[ "$selet" = "1" ]]; then
+clear
+cr
+rm -rf /etc/openvpn/1194
+rm -f /etc/openvpn/1194.conf
+service openvpn restart > /dev/null 2>&1
+elif [[ "$selet" = "2" ]]; then
+clear
+cr
+rm -rf /etc/openvpn/443
+rm -f /etc/openvpn/443.conf
+service openvpn restart > /dev/null 2>&1
+elif [[ "$selet" != "3" ]]; then
+echo -e "\033[1;31m[ผิดพลาด]\033[1;33m ตัวเลือกไม่ถูกต้อง: กรอกได้เฉพาะเลข 1, 2 หรือ 3 — รันคำสั่งอีกครั้งแล้วเลือกใหม่\033[0m"
+sleep 2
+fi
+clear
+cr
+exit
+else
+if [ -e '/etc/openvpn/1194.conf' ]; then 
+echo "┈┣ สถานะ ปัจจุบันเปิดแค่พอต 1194
+┈┣━━━━━━━━━━━━━━━━━━━━╯  "
+read -p "┈╰┫ต้องการเปิดใช้งานพอต 443 ด้วยหรือไม่ Y/n :" selet
+if [[ "$selet" = "Y" || "$selet" = "y" ]]; then
+cp /etc/openvpn/1194.conf /etc/openvpn/443.conf
+sed -i 's/1194/443/g' /etc/openvpn/443.conf
+sed -i 's/5555/3333/g' /etc/openvpn/443.conf
+sed -i 's/10.8.0.0/10.7.0.0/g' /etc/openvpn/443.conf
+mkdir -p /etc/openvpn/443
+mkdir -p /etc/openvpn/1194
+apt-get purge -y openvpn > /dev/null 2>&1
+apt-get install -y openvpn > /dev/null 2>&1
+service openvpn restart > /dev/null 2>&1
+fi
+clear
+cr
+else 
+echo "┈┣ สถานะ ปัจจุบันเปิดแค่พอต 443
+┈┣━━━━━━━━━━━━━━━━━━━━╯  "
+read -p "┈╰┫ต้องการเปิดใช้งานพอต 1194 ด้วยหรือไม่ Y/n :" selet
+if [[ "$selet" = "Y" || "$selet" = "y" ]]; then
+cp /etc/openvpn/443.conf /etc/openvpn/1194.conf
+sed -i 's/443/1194/g' /etc/openvpn/1194.conf
+sed -i 's/3333/5555/g' /etc/openvpn/1194.conf
+sed -i 's/10.9.0.0/10.9.0.0/g' /etc/openvpn/1194.conf
+mkdir -p /etc/openvpn/443
+mkdir -p /etc/openvpn/1194
+apt-get purge -y openvpn > /dev/null 2>&1
+apt-get install -y openvpn > /dev/null 2>&1
+service openvpn restart > /dev/null 2>&1
+fi
+clear
+cr
+fi
+fi

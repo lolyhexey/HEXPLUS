@@ -1,0 +1,14 @@
+wget -O /usr/bin/autodns https://kguza.net/sshplus-vip/DNS/autodns
+chmod +x /usr/bin/autodns
+#dns1
+zone=lolouch.com #ชื่อโดเมน
+dnsrecord=*.vip.lolouch.com #ชื่อ DNS
+email=balajojo23@gmail.com #email
+api_key=f784fda9b707adb6ab5cacd551c7d682bf915 #api_key
+echo "autodns $zone $dnsrecord $email $api_key" >> /etc/autostart
+#dns2
+zone=kguza.net #ชื่อโดเมน
+dnsrecord=*.seven.kguza.net #ชื่อ DNS
+email=wullopkk@gmail.com #email
+api_key=e5c7bbef36169d9828611957f9c7122f7b5b9 #api_key
+echo "autodns $zone $dnsrecord $email $api_key" >> /etc/autostart

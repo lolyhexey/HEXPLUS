@@ -1,0 +1,164 @@
+#!/bin/bash
+if [[ "" = "$1" ]]; then
+clear
+echo "    ╭━━━━━━━━━━━━╮ 
+    ┣ เลือกใช้คำสั่ง
+    ┣━━━━━━━━━━━━━━━╯     
+    ┣ 1. กำหนดค่าความเร็ว          
+    ┣ 2. จัดการระบบ Auto          
+    ┣ 3. สถานะปัจจุบัน          
+    ┣━━━━━━━━━━━━━━━╯     "
+ read -p "    ┣ Number : " sm
+ if [[ "$sm" = "" ]]; then
+clear
+echo "   ╭━━━━━━━━━━━╮ 
+   ┣ โปรดพิมพ์คำสั่ง
+   ╰━━━━━━━━━━━╯ 
+ "
+ exit
+fi
+else
+sm=$1
+fi
+case "$sm" in
+1)
+if ! command -v setspeed > /dev/null 2>&1; then
+clear
+echo -e "\033[1;31m[ผิดพลาด]\033[1;33m เปิดเมนูกำหนดค่าความเร็วไม่ได้: ไม่พบคำสั่ง setspeed — กรุณาติดตั้งสคริปต์ใหม่\033[0m"
+exit 1
+fi
+setspeed
+exit
+;;
+2)
+if [[ "" = "$2" ]]; then
+clear
+echo "    ╭━━━━━━━━━━━━━━╮ 
+    ┣ เลือกใช้คำสั่ง
+    ┣━━━━━━━━━━━━━━╯     
+    ┣ 1. เปิดใช้งาน        
+    ┣ 2. ปิดใช้งาน          
+    ┣ 3. ตรวจสอบ Log         
+    ┣━━━━━━━━━━━━━━╯       "
+ read -p "    ┣ Number : " smi
+ if [[ "$smi" = "" ]]; then
+clear
+echo "    ╭━━━━━━━━━━━╮ 
+    ┣ โปรดพิมพ์คำสั่ง
+    ╰━━━━━━━━━━━╯ 
+ "
+ exit
+fi
+else
+smi=$2
+fi
+case "$smi" in
+1)
+clear
+echo
+if [ ! -d /root/auto/speed ]; then
+echo -e "\033[1;31m[ผิดพลาด]\033[1;33m เปิดใช้งานระบบ Auto ไม่ได้: ไม่พบไดเรกทอรี /root/auto/speed — กรุณาติดตั้งสคริปต์ใหม่\033[0m"
+exit 1
+fi
+if ! command -v vnstat > /dev/null 2>&1; then
+echo -e "\033[1;31m[ผิดพลาด]\033[1;33m เปิดใช้งานระบบ Auto ไม่ได้: ไม่พบคำสั่ง vnstat — กรุณาติดตั้งด้วย apt-get install vnstat ก่อน\033[0m"
+exit 1
+fi
+cd /root/auto/speed
+echo "    ╭━━━━━━━━━━━━━━━━━━╮
+    ┣ ตั้งค่าตรวจสอบแบนวิท
+    ┣━━━━━━━━━━━━━━━━━━╯     
+    ┣ ตรวจสอบแบทวิททุกๆ กี่นาที      "
+read -p "    ┣ จำนวนนาที : " min
+echo "    ┣ เปิดใช้งานเต็มสปีดกี่ Gb/ชม    "
+read -p "    ┣ จำนวน Gb : " sh
+echo "    ┣ เปิดความเร็วกี่ Mb เมื่อใช้เกิน $sh Gb/ชม.   "
+read -p "    ┣ จำนวน Mb : " bw
+#echo "    ┣ ยกเลิกบล็อกสปีดหลังจากกี่ ชม.   "
+#read -p "    ┣ จำนวน ชม. : " hh
+if [[ -z "$min" || -z "$sh" || -z "$bw" ]]; then
+clear
+echo -e "\033[1;31m[ผิดพลาด]\033[1;33m ตั้งค่าระบบ Auto ไม่สำเร็จ: กรอกข้อมูลไม่ครบ (จำนวนนาที / Gb / Mb ต้องไม่เว้นว่าง) — กรุณากรอกตัวเลขให้ครบทุกช่องแล้วลองใหม่\033[0m"
+exit 1
+fi
+
+cp .bw bandwidth.sh
+cp .chek chek
+sed -i "s/111/$sh/g" chek
+sed -i "s/222/$bw/g" chek
+#sed -i "s/333/$hh/g" chek
+sed -i "s/444/$min/g" chek
+cd
+echo "*/$min * * * * root /root/auto/speed/chek" > /etc/cron.d/speed
+service cron restart
+clear
+echo "   ╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮ 
+   ┣ => เปิดใช้งานตรวจสอบอัตโนมัตเรียบร้อย
+   ┣ => ค่าที่คุณกำหนดคือ
+   ┣ => ตรวจสอบแบนวิททุกๆ $min นาที 
+   ┣ => เมื่อใช้เกิน $sh Gb/ชม. 
+   ┣ => ความเร็วจะลดอยู่ที่ $bw Mbps
+   ╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯ 
+ "
+ #┣ => จะใช้งานเต็มสปีดอีกครั้ง หลังจาก $hh ชม.
+;;
+2)
+[ -e /etc/cron.d/speed ] && rm /etc/cron.d/speed
+service cron restart
+if [ ! -d /root/auto/speed ]; then
+clear
+echo -e "\033[1;31m[ผิดพลาด]\033[1;33m ปิดใช้งานระบบ Auto ไม่สมบูรณ์: ไม่พบไดเรกทอรี /root/auto/speed — ลบเฉพาะตารางงาน cron ให้แล้ว\033[0m"
+exit 1
+fi
+cd /root/auto/speed
+[ -e ./bandwidth.sh ] && ./bandwidth.sh stop
+echo "    ┣  ปัจจุบันใช้งานความเร็วเต็มสปีด "  > /root/auto/speed/status
+clear
+echo "      ╭━━━━━━━━━━━━━━━━━━━━╮  "
+echo "      ┣ => ปิดใช้งานระบบเช็กอัตโนมัต        "
+echo "      ╰━━━━━━━━━━━━━━━━━━━━╯  "
+;;
+3)
+clear
+
+echo "    ╭━━━━━━━━━━━━━━━━━━━━━━━╮  "
+if [ -e /root/auto/speed/log ]; then
+cat /root/auto/speed/log
+else
+echo -e "    ┣ \033[1;31m[ผิดพลาด]\033[1;33m แสดง Log ไม่ได้: ยังไม่มีไฟล์บันทึก (/root/auto/speed/log) — กรุณาเปิดใช้งานระบบ Auto ก่อน\033[0m"
+fi
+echo "    ╰━━━━━━━━━━━━━━━━━━━━━━━╯ "
+echo
+exit
+;;
+*)
+clear
+echo -e "\033[1;31m[ผิดพลาด]\033[1;33m ตัวเลือกไม่ถูกต้อง: คุณกรอก \"$smi\" — กรุณาเลือก 1, 2 หรือ 3 เท่านั้น\033[0m"
+exit 1
+;;
+esac
+;;
+3)
+clear
+echo
+if [ -e /etc/cron.d/speed ]; then
+echo "    ╭━━━━━━━━━━━━━━━━╮  "
+echo "    ┣  เปิดใช้งานเช็กอัตโนมัต     "
+else
+echo "    ╭━━━━━━━━━━━━━━━━╮  "
+echo "    ┣  ปิดใช้งานเช็กอัตโนมัต     "
+fi
+echo "    ┣━━━━━━━━━━━━━━━━━━━━━━━╮  "
+if [ -e /root/auto/speed/status ]; then
+cat /root/auto/speed/status
+else
+echo -e "    ┣ \033[1;31m[ผิดพลาด]\033[1;33m อ่านสถานะไม่ได้: ไม่พบไฟล์สถานะ (/root/auto/speed/status) — กรุณาตั้งค่าระบบ Auto ก่อน\033[0m"
+fi
+echo "    ╰━━━━━━━━━━━━━━━━━━━━━━━╯ "
+;;
+*)
+clear
+echo -e "\033[1;31m[ผิดพลาด]\033[1;33m ตัวเลือกไม่ถูกต้อง: คุณกรอก \"$sm\" — กรุณาเลือก 1, 2 หรือ 3 เท่านั้น\033[0m"
+exit 1
+;;
+esac

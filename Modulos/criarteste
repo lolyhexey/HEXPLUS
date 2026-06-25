@@ -1,0 +1,110 @@
+#!/bin/bash
+IP=$(cat /etc/IP)
+if [ ! -d /etc/SSHPlus/userteste ]; then
+mkdir /etc/SSHPlus/userteste
+fi
+tput setaf 7 ; tput setab 4 ; tput bold ; printf '%30s%s%-15s\n' "        สร้างบัญชีผู้ใช้ทดลอง" ; tput sgr0
+echo ""
+[ "$(ls -A /etc/SSHPlus/userteste)" ] && echo -e "\033[1;32mบัญชีผู้ใช้ทดลอง!\033[1;37m" || echo -e "\033[1;31mไม่มีผู้ใช้ทดลองที่ใช้งานอยู่!\033[0m"
+echo ""
+for testeson in $(ls /etc/SSHPlus/userteste |sort |sed 's/.sh//g')
+do
+echo "$testeson"
+done
+echo ""
+echo -ne "\033[1;32mUser\033[1;37m: "; read nome
+if [[ -z $nome ]]
+then
+echo ""
+echo -e "\033[1;31m[ผิดพลาด]\033[1;33m สร้างผู้ใช้ทดลองไม่สำเร็จ: ชื่อผู้ใช้ว่างเปล่า — กรุณาพิมพ์ชื่อผู้ใช้ก่อนกด ENTER\033[0m"
+	exit 1
+fi
+if [[ ${nome} != +([a-zA-Z0-9]) ]]
+then
+echo ""
+echo -e "\033[1;31m[ผิดพลาด]\033[1;33m ชื่อผู้ใช้ไม่ถูกต้อง: ชื่อผู้ใช้ต้องไม่มีช่องว่างหรืออักขระพิเศษ — ใช้ได้เฉพาะตัวอักษรภาษาอังกฤษ (a-z, A-Z) และตัวเลข (0-9)\033[0m"
+	exit 1
+fi
+if [[ ${#nome} -gt 10 ]]
+then
+echo ""
+echo -e "\033[1;31m[ผิดพลาด]\033[1;33m ชื่อผู้ใช้ไม่ถูกต้อง: ชื่อผู้ใช้ยาวเกินไป — ต้องไม่เกิน 10 ตัวอักษร\033[0m"
+	exit 1
+fi
+awk -F : ' { print $1 }' /etc/passwd > /tmp/users
+if grep -Fxq "$nome" /tmp/users
+then
+	echo -e "\n\033[1;31m[ผิดพลาด]\033[1;33m สร้างผู้ใช้ทดลองไม่สำเร็จ: มีผู้ใช้ชื่อนี้อยู่แล้ว — กรุณาใช้ชื่ออื่น\033[0m\n"
+	exit 1
+fi
+echo -ne "\033[1;32mPassword\033[1;37m: "; read pass
+if [[ -z $pass ]]
+then
+echo ""
+echo -e "\033[1;31m[ผิดพลาด]\033[1;33m รหัสผ่านไม่ถูกต้อง: รหัสผ่านว่างเปล่า — กรุณาพิมพ์รหัสผ่านก่อนกด ENTER\033[0m"
+	exit 1
+fi
+if [[ ${#pass} -lt 4 ]]
+then
+echo ""
+echo -e "\033[1;31m[ผิดพลาด]\033[1;33m รหัสผ่านไม่ถูกต้อง: รหัสผ่านสั้นเกินไป — ต้องมีอย่างน้อย 4 ตัวอักษร\033[0m"
+	exit 1
+fi
+echo -ne "\033[1;32mlimited connection\033[1;37m: "; read limit
+if [[ -z $limit ]]
+then
+echo ""
+echo -e "\033[1;31m[ผิดพลาด]\033[1;33m จำนวนอุปกรณ์ที่ใช้พร้อมกันไม่ถูกต้อง: ไม่ได้ระบุจำนวน — กรุณาพิมพ์จำนวนอุปกรณ์ เช่น 1\033[0m"
+	exit 1
+fi
+if [[ ${limit} != +([0-9]) ]] || [[ $limit -lt 1 ]]
+then
+echo ""
+echo -e "\033[1;31m[ผิดพลาด]\033[1;33m จำนวนอุปกรณ์ที่ใช้พร้อมกันไม่ถูกต้อง: ต้องเป็นตัวเลขที่มากกว่าศูนย์เท่านั้น — กรุณาพิมพ์เฉพาะตัวเลข เช่น 1\033[0m"
+	exit 1
+fi
+echo -ne "\033[1;32mนาที \033[1;33m(\033[1;31mEx: \033[1;37m60\033[1;33m)\033[1;37m: "; read u_temp
+if [[ -z $u_temp ]]
+then
+echo ""
+echo -e "\033[1;31m[ผิดพลาด]\033[1;33m จำนวนนาทีไม่ถูกต้อง: ไม่ได้ระบุจำนวนนาที — กรุณาพิมพ์จำนวนนาที เช่น 60\033[0m"
+	exit 1
+fi
+if [[ ${u_temp} != +([0-9]) ]] || [[ $u_temp -lt 1 ]]
+then
+echo ""
+echo -e "\033[1;31m[ผิดพลาด]\033[1;33m จำนวนนาทีไม่ถูกต้อง: จำนวนนาทีต้องเป็นตัวเลขที่มากกว่าศูนย์เท่านั้น — กรุณาพิมพ์เฉพาะตัวเลข เช่น 60\033[0m"
+	exit 1
+fi
+useradd -M -s /bin/false $nome || {
+	echo -e "\n\033[1;31m[ผิดพลาด]\033[1;33m สร้างผู้ใช้ทดลองไม่สำเร็จ: คำสั่ง useradd ล้มเหลว — ตรวจสอบว่ารันด้วยสิทธิ์ root และชื่อผู้ใช้ไม่ซ้ำกับระบบ แล้วลองใหม่อีกครั้ง\033[0m\n"
+	exit 1
+}
+(echo $pass;echo $pass) |passwd $nome > /dev/null 2>&1 || {
+	echo -e "\n\033[1;31m[ผิดพลาด]\033[1;33m ตั้งรหัสผ่านไม่สำเร็จ: คำสั่ง passwd ล้มเหลว — ลบผู้ใช้ $nome แล้วลองสร้างใหม่อีกครั้ง\033[0m\n"
+	userdel --force $nome > /dev/null 2>&1
+	exit 1
+}
+echo "$pass" > /etc/SSHPlus/senha/$nome
+echo "$nome $limit" >> /root/usuarios.db
+echo "#!/bin/bash
+pkill -f "$nome"
+userdel --force $nome
+grep -v ^$nome[[:space:]] /root/usuarios.db > /tmp/ph ; cat /tmp/ph > /root/usuarios.db
+rm /etc/SSHPlus/senha/$nome > /dev/null 2>&1
+rm -rf /etc/SSHPlus/userteste/$nome.sh
+exit" > /etc/SSHPlus/userteste/$nome.sh
+chmod +x /etc/SSHPlus/userteste/$nome.sh
+at -f /etc/SSHPlus/userteste/$nome.sh now + $u_temp min > /dev/null 2>&1
+clear
+echo -e "\E[44;1;37m     สร้างบัญชีผู้ใช้ทดลอง เรียบร้อย     \E[0m"
+echo ""
+echo -e "\033[1;32mIP:\033[1;37m $IP"
+echo -e "\033[1;32mผู้ใช้:\033[1;37m $nome"
+echo -e "\033[1;32mรหัสผ่าน:\033[1;37m $pass"
+echo -e "\033[1;32mจำนวนอุปกรณ์ที่ใช้พร้อมกัน:\033[1;37m $limit"
+echo -e "\033[1;32mอายุใช้งาน:\033[1;37m $u_temp นาที"
+echo ""
+echo -e "\033[1;33mหลังจากเวลาที่กำหนด ผู้ใช้"
+echo -e "\033[1;32m$nome \033[1;33mจะถูกตัดการเชื่อมต่อและลบ.\033[0m"
+exit

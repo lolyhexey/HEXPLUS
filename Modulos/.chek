@@ -1,0 +1,48 @@
+cd /root/auto/speed
+if ! command -v vnstat > /dev/null 2>&1; then
+	time=$(date +'%d/%m/%Y %H:%M:%S')
+	echo "    ┣  [ผิดพลาด] $time ตรวจสอบแบนด์วิดท์ไม่ได้: ไม่พบคำสั่ง vnstat — กรุณาติดตั้งด้วย apt-get install vnstat" >> log
+	exit 1
+fi
+if [ -e '/var/lib/vnstat/eth0' ]; then
+	vnstat -u -i eth0
+fi 
+if [ -e '/var/lib/vnstat/ens3' ]; then
+vnstat -u -i ens3
+fi
+if [ -e '/var/lib/vnstat/ens18' ]; then
+vnstat -u -i ens18
+fi
+
+RX24=$(vnstat -h | sed -n '23p' | awk '{print $10}' | cut -d ',' -f 1-20 --output-delimiter='')
+TX24=$(vnstat -h | sed -n '23p' | awk '{print $11}' | cut -d ',' -f 1-20 --output-delimiter='')
+if [ -z "$RX24" ] || [ -z "$TX24" ]; then
+	time=$(date +'%d/%m/%Y %H:%M:%S')
+	echo "    ┣  [ผิดพลาด] $time อ่านข้อมูลแบนด์วิดท์ไม่ได้: vnstat ยังไม่มีข้อมูลสถิติรายชั่วโมง — กรุณารอให้ vnstat เก็บข้อมูลสักครู่แล้วระบบจะตรวจสอบรอบถัดไป" >> log
+	exit 1
+fi
+chek=$(echo "scale=0;($TX24+$RX24)/ 1024" | bc)
+
+if [ $chek -gt 111 ]; then
+cp .bw bandwidth.sh
+sed -i 's/112233/222/g' bandwidth.sh
+./bandwidth.sh stop
+./bandwidth.sh start 
+time=$(date +'%d/%m/%Y %H:%M:%S') 
+echo "    ┣  start $time" >> log 
+echo "    ┣  ปัจจุบันใช้งานความเร็ว 222Mb "  > status
+echo start > start
+#hour=$(date -d "333 hour" +"%M %H")
+echo "3 */1 * * * root /root/auto/speed/chek" > /etc/cron.d/speed
+/etc/init.d/cron restart
+else
+if [ -e /root/auto/speed/start ]; then
+./bandwidth.sh stop
+time=$(date +'%d/%m/%Y %H:%M:%S')  
+echo "    ┣  stop  $time" >> log 
+echo "    ┣  ปัจจุบันใช้งานความเร็วเต็มสปีด "  > status
+rm start
+echo "*/444 * * * * root /root/auto/speed/chek" > /etc/cron.d/speed
+/etc/init.d/cron restart
+fi
+fi
