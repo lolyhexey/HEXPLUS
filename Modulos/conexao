@@ -1238,7 +1238,7 @@ refresh_pattern .               0       20%     4320
 				echo -e "\033[1;32mกำลังอัปเดตระบบ"
 				echo ""
 				fun_attos() {
-					apt-get update-y
+					apt-get update -y
 				}
 				fun_bar 'fun_attos'
 				echo ""
