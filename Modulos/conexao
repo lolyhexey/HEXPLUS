@@ -14,16 +14,25 @@ SCOLOR='\033[0m'
 	ram3=$(free -h | grep -i mem | awk {'print $3'})
 	uso=$(top -bn1 | awk '/Cpu/ { cpu = "" 100 - $8 "%" }; END { print cpu }')
 	system=$(cat /etc/issue.net)
+	HEXPLUS_LOG="${HEXPLUS_LOG:-/var/log/hexplus-install.log}"
 	fun_bar() {
 		comando[0]="$1"
 		comando[1]="$2"
+		mkdir -p "$(dirname "$HEXPLUS_LOG")" 2>/dev/null
+		{
+			echo ""
+			echo "===== $(date '+%Y-%m-%d %H:%M:%S') | ${comando[0]} ====="
+		} >>"$HEXPLUS_LOG" 2>&1
 		(
+			export DEBIAN_FRONTEND=noninteractive
+			export NEEDRESTART_MODE=a
+			export NEEDRESTART_SUSPEND=1
 			[[ -e $HOME/fim ]] && rm $HOME/fim
 			[[ ! -d /etc/SSHPlus ]] && rm -rf /bin/menu
-			${comando[0]} >/dev/null 2>&1
-			${comando[1]} >/dev/null 2>&1
+			${comando[0]} </dev/null >>"$HEXPLUS_LOG" 2>&1
+			${comando[1]} </dev/null >>"$HEXPLUS_LOG" 2>&1
 			touch $HOME/fim
-		) >/dev/null 2>&1 &
+		) </dev/null >>"$HEXPLUS_LOG" 2>&1 &
 		tput civis
 		echo -ne "\033[1;33mกรุณารอสักครู่ \033[1;37m- \033[1;33m["
 		while true; do
@@ -214,7 +223,7 @@ refresh_pattern .               0       20%     4320
 			echo -e "\n\033[1;32mกำลังตั้งค่า SQUID PROXY\033[0m"
 			echo ""
 			fun_bar 'sqd_conf'
-			netstat -nltp 2>/dev/null | grep 'squid' >/dev/null && echo -e "\n\033[1;32mติดตั้งพร็อกซี่สำเร็จแล้ว!\033[0m" || echo -e "\n\033[1;31m[ผิดพลาด]\033[1;33m SQUID เริ่มทำงานไม่สำเร็จ: บริการไม่ทำงานหลังติดตั้ง — ตรวจสอบการตั้งค่าแล้วรัน service squid restart\033[0m"
+			netstat -nltp 2>/dev/null | grep 'squid' >/dev/null && echo -e "\n\033[1;32mติดตั้งพร็อกซี่สำเร็จแล้ว!\033[0m" || echo -e "\n\033[1;31m[ผิดพลาด]\033[1;33m SQUID เริ่มทำงานไม่สำเร็จ: บริการไม่ทำงานหลังติดตั้ง\n  ดู log ละเอียดได้ที่: \033[1;36m$HEXPLUS_LOG\033[1;33m\n  ดูเฉพาะ error: \033[1;36mgrep -iE 'err|fail|fatal|cannot|unable|not found' $HEXPLUS_LOG | tail -20\033[1;33m\n  หรือเช็คสถานะ: \033[1;36mservice squid status\033[0m"
 			sleep 2.5s
 			fun_conexao
 		fi
@@ -1436,7 +1445,7 @@ exit 0' >$RCLOCAL
 			EOF
 			# gerar client.ovpn
 			newclient "HEXPLUS"
-			[[ "$(netstat -nplt | grep -wc 'openvpn')" != '0' ]] && echo -e "\n\033[1;32mติดตั้ง OPENVPN สำเร็จแล้ว\033[0m" || echo -e "\n\033[1;31m[ผิดพลาด]\033[1;33m OPENVPN เริ่มทำงานไม่สำเร็จ: การติดตั้งล้มเหลวหรือพอร์ตถูกใช้งานอยู่ — ตรวจสอบด้วย service openvpn status แล้วลองติดตั้งใหม่\033[0m"
+			[[ "$(netstat -nplt | grep -wc 'openvpn')" != '0' ]] && echo -e "\n\033[1;32mติดตั้ง OPENVPN สำเร็จแล้ว\033[0m" || echo -e "\n\033[1;31m[ผิดพลาด]\033[1;33m OPENVPN เริ่มทำงานไม่สำเร็จ: การติดตั้งล้มเหลวหรือพอร์ตถูกใช้งานอยู่\n  ดู log ละเอียดได้ที่: \033[1;36m$HEXPLUS_LOG\033[1;33m\n  ดูเฉพาะ error: \033[1;36mgrep -iE 'err|fail|fatal|cannot|unable|not found' $HEXPLUS_LOG | tail -20\033[1;33m\n  หรือเช็คสถานะ: \033[1;36mservice openvpn status\033[0m"
 		}
 		sed -i '$ i\echo 1 > /proc/sys/net/ipv4/ip_forward' /etc/rc.local
 		sed -i '$ i\echo 1 > /proc/sys/net/ipv6/conf/all/disable_ipv6' /etc/rc.local

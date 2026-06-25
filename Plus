@@ -9,18 +9,24 @@ _Ink="/usr/local/lib"
 _1nk="/usr/lib"
 _3nk="FULLSPEED"
 cd $HOME
+HEXPLUS_LOG="${HEXPLUS_LOG:-/var/log/hexplus-install.log}"
+mkdir -p "$(dirname "$HEXPLUS_LOG")" 2>/dev/null
 fun_bar () {
 comando[0]="$1"
 comando[1]="$2"
+{
+echo ""
+echo "===== $(date '+%Y-%m-%d %H:%M:%S') | ${comando[0]} ====="
+} >>"$HEXPLUS_LOG" 2>&1
 (
 export DEBIAN_FRONTEND=noninteractive
 export NEEDRESTART_MODE=a
 export NEEDRESTART_SUSPEND=1
 [[ -e $HOME/fim ]] && rm $HOME/fim
-${comando[0]} -y </dev/null >/dev/null 2>&1
-${comando[1]} -y </dev/null >/dev/null 2>&1
+${comando[0]} -y </dev/null >>"$HEXPLUS_LOG" 2>&1
+${comando[1]} -y </dev/null >>"$HEXPLUS_LOG" 2>&1
 touch $HOME/fim
-) </dev/null >/dev/null 2>&1 &
+) </dev/null >>"$HEXPLUS_LOG" 2>&1 &
 tput civis
 echo -ne "  \033[1;33mกรุณารอสักครู่ \033[1;37m- \033[1;33m["
 while true; do

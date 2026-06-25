@@ -1,7 +1,9 @@
-VERSAO: 39
+VERSAO: 40
 
 @lolyhexey
 
+เพิ่ม log ตอนติดตั้ง: /var/log/hexplus-install.log
+ข้อความ error ตอนนี้บอก path log + คำสั่งดู error ทันที
 แก้บั๊ก figlet หาไม่เจอตอนเริ่มต้น Plus
 ปิดเสียง output ที่หลุดมาตอนติดตั้งแพ็กเกจ
 เพิ่ม GPG key ครบ 2 ตัวสำหรับ trusty squid repo
