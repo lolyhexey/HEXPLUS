@@ -7,7 +7,7 @@ IP=$(wget -qO- ipv4.icanhazip.com)
 IP2=$(wget -qO- http://whatismyip.akamai.com/)
 [[ "$IP" != "$IP2" ]] && ipdovps="$IP2" || ipdovps="$IP"
 echo -e "$ipdovps" >/etc/IP
-lst=$1 && lst1=$2 && lst2=$3 && key1=$4 && key2=crz
+lst1=$1 && lst2=$2
 echo -e "Asia/Bangkok" >/etc/timezone
 ln -fs /usr/share/zoneinfo/Asia/Bangkok /etc/localtime >/dev/null 2>&1
 dpkg-reconfigure --frontend noninteractive tzdata >/dev/null 2>&1
