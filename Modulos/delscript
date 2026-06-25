@@ -10,25 +10,6 @@ if [[ "$resp" = s || "$resp" = S || "$resp" = y || "$resp" = Y ]];then
     done
     screen -wipe > /dev/null 2>&1
 
-    # --- Trojan-Go (docker container + config) ---
-    docker stop Trojan-Go > /dev/null 2>&1
-    docker rm Trojan-Go > /dev/null 2>&1
-    docker rmi teddysun/trojan-go > /dev/null 2>&1
-    rm -rf /etc/trojan-go > /dev/null 2>&1
-    rm -f /bin/trojan-go > /dev/null 2>&1
-
-    # --- V2Ray / Xray ---
-    systemctl stop v2ray > /dev/null 2>&1
-    systemctl disable v2ray > /dev/null 2>&1
-    systemctl stop xray > /dev/null 2>&1
-    systemctl disable xray > /dev/null 2>&1
-    rm -rf /usr/bin/v2ray /usr/bin/xray > /dev/null 2>&1
-    rm -rf /etc/v2ray /etc/xray > /dev/null 2>&1
-    rm -rf /var/log/v2ray /var/log/xray > /dev/null 2>&1
-    rm -f /etc/systemd/system/v2ray.service /lib/systemd/system/v2ray.service > /dev/null 2>&1
-    rm -f /etc/systemd/system/xray.service /lib/systemd/system/xray.service > /dev/null 2>&1
-    rm -f /bin/v2raymanager > /dev/null 2>&1
-
     # --- BadVPN ---
     pkill -9 badvpn-udpgw > /dev/null 2>&1
     rm -f /usr/local/bin/badvpn-udpgw > /dev/null 2>&1
@@ -54,7 +35,7 @@ if [[ "$resp" = s || "$resp" = S || "$resp" = y || "$resp" = Y ]];then
     apt-get purge apache2 -y > /dev/null 2>&1
     apt-get autoremove -y > /dev/null 2>&1
 
-    rm /bin/criarusuario /bin/expcleaner /bin/sshlimiter /bin/addhost /bin/listar /bin/sshmonitor /bin/ajuda /bin/menu /bin/OpenVPN /bin/userbackup /bin/tcpspeed /bin/badvpn /bin/otimizar /bin/speedtest /bin/trafego /bin/banner /bin/limit /bin/limite /bin/senharoot /bin/reiniciarservicos /bin/reiniciarsistema /bin/attscript /bin/criarteste /bin/socks  /bin/DropBear /bin/alterarlimite /bin/alterarsenha /bin/remover /bin/detalhes /bin/mudardata /bin/botssh /bin/infousers /bin/droplimiter /bin/conexao /bin/onlineapp /bin/botteste /bin/trojan-go /bin/v2raymanager /bin/versao > /dev/null 2>&1
+    rm /bin/criarusuario /bin/expcleaner /bin/sshlimiter /bin/addhost /bin/listar /bin/sshmonitor /bin/ajuda /bin/menu /bin/OpenVPN /bin/userbackup /bin/tcpspeed /bin/badvpn /bin/otimizar /bin/speedtest /bin/trafego /bin/banner /bin/limit /bin/limite /bin/senharoot /bin/reiniciarservicos /bin/reiniciarsistema /bin/attscript /bin/criarteste /bin/socks  /bin/DropBear /bin/alterarlimite /bin/alterarsenha /bin/remover /bin/detalhes /bin/mudardata /bin/botssh /bin/infousers /bin/droplimiter /bin/conexao /bin/onlineapp /bin/botteste /bin/versao > /dev/null 2>&1
     rm -rf /etc/SSHPlus > /dev/null 2>&1
     clear
     echo -e "\033[1;36mขอบคุณที่ใช้งาน SSHPLUS MANAGER\033[1;33m"
