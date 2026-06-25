@@ -768,25 +768,6 @@ refresh_pattern .               0       20%     4320
 				}
 				fun_bar 'fun_finssl' 'service stunnel4 restart'
 				netstat -nltp 2>/dev/null | grep 'stunnel4' >/dev/null && echo -e "\n\033[1;32mติดตั้ง SSL TUNNEL สำเร็จแล้ว !\033[1;31m พอร์ต: \033[1;33m$porta\033[0m" || echo -e "\n\033[1;31m[ผิดพลาด]\033[1;33m SSL TUNNEL (stunnel4) เริ่มทำงานไม่สำเร็จ: บริการไม่ทำงานหลังติดตั้ง — ตรวจสอบ /etc/stunnel/stunnel.conf แล้วรัน service stunnel4 restart\033[0m"
-				sleep 1
-				clear
-				echo -e "กำลังแก้ไข SSL CLARO"
-				cd /etc/stunnel/
-				rm -rf stunnel.conf
-				rm -rf stunnel.pem
-				wget https://kguza.net/sshplus-vip/Install/cert
-				wget https://kguza.net/sshplus-vip/Install/key
-				wget https://kguza.net/sshplus-vip/Install/stunnel
-				mv cert cert.pem
-				mv key key.pem
-				mv stunnel stunnel.conf
-				chmod 777 cert.pem
-				chmod 777 key.pem
-				chmod 777 stunnel.conf
-				service stunnel4 restart
-				cd $HOME
-				clear
-				echo -e "แก้ไขเสร็จแล้ว"
 				sleep 2
 				fun_conexao
 			} || {
