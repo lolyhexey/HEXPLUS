@@ -15,14 +15,6 @@ if [[ "$resp" = s || "$resp" = S || "$resp" = y || "$resp" = Y ]];then
     rm -f /usr/local/bin/badvpn-udpgw > /dev/null 2>&1
     rm -f /bin/badudp /bin/badvpn > /dev/null 2>&1
 
-    # --- Nginx + PHP ---
-    systemctl stop nginx php7.4-fpm > /dev/null 2>&1
-    apt-get purge nginx nginx-common nginx-core -y > /dev/null 2>&1
-    apt-get purge 'php7.4*' -y > /dev/null 2>&1
-    rm -rf /etc/nginx > /dev/null 2>&1
-    rm -rf /home/website > /dev/null 2>&1
-    rm -rf /var/www/html/server > /dev/null 2>&1
-
     systemctl daemon-reload > /dev/null 2>&1
 
     # --- Original packages and binaries ---
