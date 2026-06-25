@@ -1293,7 +1293,7 @@ refresh_pattern .               0       20%     4320
 				./easyrsa gen-crl
 				cp pki/ca.crt pki/private/ca.key pki/dh.pem pki/issued/server.crt pki/private/server.key /etc/openvpn/easy-rsa/pki/crl.pem /etc/openvpn
 				chown nobody:$GROUPNAME /etc/openvpn/crl.pem
-				openvpn --genkey --secret /etc/openvpn/ta.key
+				openvpn --genkey secret /etc/openvpn/ta.key 2>/dev/null || openvpn --genkey --secret /etc/openvpn/ta.key
 				# Generando server.conf
 				echo "port $porta
 proto $PROTOCOL
@@ -1350,7 +1350,7 @@ status openvpn-status.log
 verb 3
 crl-verify crl.pem
 client-to-client
-client-cert-not-required
+verify-client-cert none
 username-as-common-name
 plugin $(find /usr -type f -name 'openvpn-plugin-auth-pam.so') login
 duplicate-cn" >>/etc/openvpn/server.conf

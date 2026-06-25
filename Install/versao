@@ -1,7 +1,9 @@
-VERSAO: 40
+VERSAO: 41
 
 @lolyhexey
 
+แก้ OpenVPN เริ่มไม่ได้บน Ubuntu 22+: client-cert-not-required ถูกถอด ใช้ verify-client-cert none แทน
+แก้ openvpn --genkey ให้ใช้ syntax ใหม่ก่อน fallback ไปของเก่า (รองรับ OpenVPN 2.6)
 เพิ่ม log ตอนติดตั้ง: /var/log/hexplus-install.log
 ข้อความ error ตอนนี้บอก path log + คำสั่งดู error ทันที
 แก้บั๊ก figlet หาไม่เจอตอนเริ่มต้น Plus
