@@ -21,12 +21,13 @@ fun_sqd02() {
 touch /etc/apt/sources.list.d/trusty_sources.list >/dev/null 2>&1
 echo "deb http://us.archive.ubuntu.com/ubuntu/ trusty main universe" | tee --append /etc/apt/sources.list.d/trusty_sources.list >/dev/null 2>&1
 }
-[[ $(grep -wc 'Debian' /etc/issue.net) != '0' ]] && {
-apt install dirmngr -y >/dev/null 2>&1
-[[ $(apt-key list 2>/dev/null | grep -c 'Ubuntu') == '0' ]] && {
-apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32 >/dev/null 2>&1
+apt install dirmngr gnupg -y >/dev/null 2>&1
+for _key in 3B4FE6ACC0B21F32 40976EAF437D05B5; do
+[[ $(apt-key list 2>/dev/null | grep -c "$_key") == '0' ]] && {
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys "$_key" >/dev/null 2>&1 || \
+apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys "$_key" >/dev/null 2>&1
 }
-}
+done
 apt update -y >/dev/null 2>&1
 apt install squid3=3.3.8-1ubuntu6 squid=3.3.8-1ubuntu6 squid3-common=3.3.8-1ubuntu6 -y >/dev/null 2>&1
 [[ $? != 0 ]] && {
