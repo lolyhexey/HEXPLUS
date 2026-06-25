@@ -109,7 +109,7 @@ async def main_async():
     print("\033[0;34m━"*8, "\033[1;32m PROXY SOCKS", "\033[0;34m━"*8, "\n")
     print("\033[1;33mIP:\033[1;32m " + IP)
     print("\033[1;33mPORTA:\033[1;32m " + str(PORT) + "\n")
-    print("\033[0;34m━"*10, "\033[1;32m SSHPLUS", "\033[0;34m━\033[1;37m"*11, "\n")
+    print("\033[0;34m━"*10, "\033[1;32m HEXPLUS", "\033[0;34m━\033[1;37m"*11, "\n")
     async with server:
         await server.serve_forever()
 

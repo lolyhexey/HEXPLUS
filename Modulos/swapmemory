@@ -1,5 +1,5 @@
 #!/bin/bash
-#-----kiritosshxd------
+#-----lolyhexey------
 fun_swap() {
     clear
 		echo -e "\E[44;1;37m            จัดการหน่วยความจำเสมือน (SWAP)             \E[0m"

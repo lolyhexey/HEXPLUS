@@ -1,8 +1,8 @@
 #!/bin/bash
 #====================================================
-#	@kiritosshxd
+#	@lolyhexey
 #====================================================
-_lvk=$(wget -qO- https://kguza.net/sshplus-vip/Install/versao)
+_lvk=$(wget -qO- https://raw.githubusercontent.com/lolyhexey/HEXPLUS/main/Install/versao)
 IP=$(wget -qO- ipv4.icanhazip.com)
 IP2=$(wget -qO- http://whatismyip.akamai.com/)
 [[ "$IP" != "$IP2" ]] && ipdovps="$IP2" || ipdovps="$IP"
@@ -19,7 +19,7 @@ dpkg-reconfigure --frontend noninteractive tzdata >/dev/null 2>&1
 [[ ! -e /etc/SSHPlus/Exp ]] && touch /etc/SSHPlus/Exp
 [[ ! -d /etc/SSHPlus/userteste ]] && mkdir /etc/SSHPlus/userteste
 [[ ! -d /etc/SSHPlus/.tmp ]] && mkdir /etc/SSHPlus/.tmp
-echo -e 'by: @KIRITO_SSH' >/usr/lib/sshplus && cat /usr/lib/sshplus >$lst2/licence && cat /usr/lib/sshplus > /etc/SSHPlus/.tmp/crazy
+echo -e 'by: @lolyhexey' >/usr/lib/sshplus && cat /usr/lib/sshplus >$lst2/licence && cat /usr/lib/sshplus > /etc/SSHPlus/.tmp/crazy
 netstat -nplt | grep -w 'apache2' | grep -w '80' && sed -i "s/Listen 80/Listen 81/g" /etc/apache2/ports.conf && service apache2 restart
 [[ "$(grep -o '#Port 22' /etc/ssh/sshd_config)" == "#Port 22" ]] && sed -i "s;#Port 22;Port 22;" /etc/ssh/sshd_config && service ssh restart
 grep -v "^PasswordAuthentication" /etc/ssh/sshd_config >/tmp/passlogin && mv /tmp/passlogin /etc/ssh/sshd_config
@@ -36,7 +36,7 @@ rm $_dir2/cabecalho $_dir2/open.py $_dir2/proxy.py $_dir2/wsproxy.py >/dev/null 
 _mdls=("lib.sh" "addhost" "delhost" "alterarsenha" "criarusuario" "expcleaner" "mudardata" "remover" "criarteste" "droplimiter" "alterarlimite" "ajuda" "sshmonitor" "badvpn" "userbackup" "instsqd" "otimizar" "menu" "speedtest" "banner" "senharoot" "reiniciarservicos" "reiniciarsistema" "attscript" "conexao" "delscript" "detalhes" "infousers" "verifatt" "limiter" "uexpired" "cabecalho" "open.py" "proxy.py" "wsproxy.py" "onlineapp" "swapmemory" "changeroot" "timereboot" "setspeed.sh" "bw" ".chek" ".bw" "status")
 for _arq in ${_mdls[@]}; do
 	[[ -e $_dir1/$_arq ]] && rm $_dir1/$_arq >/dev/null 2>&1
-	wget -c -P $_dir1 https://kguza.net/sshplus-vip/Modulos/$_arq
+	wget -c -P $_dir1 https://raw.githubusercontent.com/lolyhexey/HEXPLUS/main/Modulos/$_arq
 	chmod +x $_dir1/$_arq
 	mkdir -p $_dir4/$_dir5
 done
@@ -53,8 +53,8 @@ sed -i '/^$/d' $_dir4/$_dir5/log
 _arq_host="/etc/hosts"
 _host[0]="app.dtac.co.th"
 _host[1]="www.opensignal.com"
-_host[2]="kguza.net2"
-_host[3]="KGUZA2"
+_host[2]="hexplus.net2"
+_host[3]="HEXPLUS2"
 for host in ${_host[@]}; do
 	if [[ "$(grep -w "$host" $_arq_host | wc -l)" = "0" ]]; then
 		sed -i "3i\127.0.0.1 $host" $_arq_host
@@ -84,7 +84,7 @@ crontab -r >/dev/null 2>&1
 	echo "0 */6 * * * /bin/uexpired"
 ) | crontab -
 echo "$_lvk" | sed -n '1 p' | cut -d' ' -f2 >/bin/versao && cat /bin/versao >/home/sshplus
-wget https://kguza.net/sshplus-vip/Install/jq-linux64 >/dev/null 2>&1
+wget https://raw.githubusercontent.com/lolyhexey/HEXPLUS/main/Install/jq-linux64 >/dev/null 2>&1
 chmod +x jq-linux64 && mv jq-linux64 $(which jq)
 service cron restart >/dev/null 2>&1
 service ssh restart >/dev/null 2>&1

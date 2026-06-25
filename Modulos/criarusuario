@@ -1,6 +1,6 @@
 #!/bin/bash
 #====================================================
-#	@kiritosshxd
+#	@lolyhexey
 #====================================================
 IP=$(cat /etc/IP)
 cor1='\033[41;1;37m'
@@ -37,7 +37,7 @@ fun_geraovpn() {
     rmt=$(sed -n '7 p' /etc/openvpn/client-common.txt)
     hedr=$(sed -n '8 p' /etc/openvpn/client-common.txt)
     prxy=$(sed -n '9 p' /etc/openvpn/client-common.txt)
-    rmt2='/SSHPLUS?'
+    rmt2='/HEXPLUS?'
     rmt4='"127.0.0.1 "'
     rmt5='127.0.0.1'
     rmt3='www.vivo.com.br 8088'

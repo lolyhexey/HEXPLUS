@@ -3,7 +3,7 @@
 SSHPLUS_CTX="delscript"
 
 clear
-echo -e "\033[1;32mต้องการถอนการติดตั้ง SSHPLUS MANAGER หรือไม่\033[1;33m"
+echo -e "\033[1;32mต้องการถอนการติดตั้ง HEXPLUS MANAGER หรือไม่\033[1;33m"
 read -p "ต้องการลบหรือไม่? [s/n] " resp
 if [[ "$resp" = s || "$resp" = S || "$resp" = y || "$resp" = Y ]];then
     log_info "uninstall started by user"
@@ -35,7 +35,7 @@ if [[ "$resp" = s || "$resp" = S || "$resp" = y || "$resp" = Y ]];then
     run_soft "rm /etc/SSHPlus" rm -rf /etc/SSHPlus
     log_info "uninstall finished"
     clear
-    echo -e "\033[1;36mขอบคุณที่ใช้งาน SSHPLUS MANAGER\033[1;33m"
+    echo -e "\033[1;36mขอบคุณที่ใช้งาน HEXPLUS MANAGER\033[1;33m"
     sleep 2
     cat /dev/null > ~/.bash_history && history -c && exit 0
 else
