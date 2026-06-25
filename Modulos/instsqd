@@ -45,3 +45,10 @@ fun_sqd02
 } || {
 fun_sqd01
 }
+id proxy >/dev/null 2>&1 || useradd -r -M -s /usr/sbin/nologin proxy >/dev/null 2>&1
+for _d in /var/log/squid3 /var/spool/squid3 /var/run/squid3 /var/log/squid /var/spool/squid /var/run/squid; do
+[[ ! -d "$_d" ]] && mkdir -p "$_d" >/dev/null 2>&1
+done
+for _d in /var/log/squid3 /var/spool/squid3 /var/run/squid3 /var/log/squid /var/spool/squid /var/run/squid; do
+[[ -d "$_d" ]] && chown -R proxy:proxy "$_d" >/dev/null 2>&1
+done
