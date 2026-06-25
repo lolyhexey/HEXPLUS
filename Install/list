@@ -33,14 +33,14 @@ rm $_dir3/s
 rm -rf $_dir4/$_dir5 
 rm $_dir1/addhost $_dir1/delhost $_dir1/alterarsenha $_dir1/criarusuario $_dir1/expcleaner $_dir1/mudardata $_dir1/remover $_dir1/criarteste $_dir1/droplimiter $_dir1/alterarlimite $_dir1/ajuda $_dir1/sshmonitor $_dir1/badvpn $_dir1/userbackup $_dir1/instsqd $_dir1/otimizar $_dir1/menu $_dir1/speedtest $_dir1/banner $_dir1/senharoot $_dir1/reiniciarservicos $_dir1/reiniciarsistema $_dir1/attscript $_dir1/conexao $_dir1/delscript $_dir1/detalhes $_dir1/infousers $_dir1/verifatt $_dir1/limiter $_dir1/uexpired $_dir1/onlineapp $_dir1/swapmemory $_dir1/changeroot $_dir1/timereboot
 rm $_dir2/cabecalho $_dir2/open.py $_dir2/proxy.py $_dir2/wsproxy.py >/dev/null 2>&1
-_mdls=("addhost" "delhost" "alterarsenha" "criarusuario" "expcleaner" "mudardata" "remover" "criarteste" "droplimiter" "alterarlimite" "ajuda" "sshmonitor" "badvpn" "userbackup" "instsqd" "otimizar" "menu" "speedtest" "banner" "senharoot" "reiniciarservicos" "reiniciarsistema" "attscript" "conexao" "delscript" "detalhes" "infousers" "verifatt" "limiter" "uexpired" "cabecalho" "open.py" "proxy.py" "wsproxy.py" "onlineapp" "swapmemory" "changeroot" "timereboot" "setspeed.sh" "bw" ".chek" ".bw" "status")
+_mdls=("lib.sh" "addhost" "delhost" "alterarsenha" "criarusuario" "expcleaner" "mudardata" "remover" "criarteste" "droplimiter" "alterarlimite" "ajuda" "sshmonitor" "badvpn" "userbackup" "instsqd" "otimizar" "menu" "speedtest" "banner" "senharoot" "reiniciarservicos" "reiniciarsistema" "attscript" "conexao" "delscript" "detalhes" "infousers" "verifatt" "limiter" "uexpired" "cabecalho" "open.py" "proxy.py" "wsproxy.py" "onlineapp" "swapmemory" "changeroot" "timereboot" "setspeed.sh" "bw" ".chek" ".bw" "status")
 for _arq in ${_mdls[@]}; do
 	[[ -e $_dir1/$_arq ]] && rm $_dir1/$_arq >/dev/null 2>&1
 	wget -c -P $_dir1 https://kguza.net/sshplus-vip/Modulos/$_arq
 	chmod +x $_dir1/$_arq
 	mkdir -p $_dir4/$_dir5
 done
-mv $_dir1/cabecalho $_dir1/open.py $_dir1/proxy.py $_dir1/wsproxy.py $_dir2
+mv $_dir1/lib.sh $_dir1/cabecalho $_dir1/open.py $_dir1/proxy.py $_dir1/wsproxy.py $_dir2
 mv $_dir1/changeroot $_dir3
 mv $_dir1/setspeed.sh $_dir3/setspeed
 mv $_dir1/.bw $_dir1/status $_dir1/.chek $_dir4/$_dir5
