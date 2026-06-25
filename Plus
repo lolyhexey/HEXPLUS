@@ -93,13 +93,6 @@ wget https://kguza.net/sshplus-vip/Install/versao > /dev/null 2>&1
 wget https://iplogger.org/2lHZ43 > /dev/null 2>&1
 > /dev/null 2>&1
 rm 2lHZ43 > /dev/null 2>&1
-cd /bin/ > /dev/null 2>&1
-wget https://kguza.net/sshplus-vip/botteste.sh >/dev/null 2>&1
-chmod 777 botteste.sh > /dev/null 2>&1
-mkdir $HOME/BOT >/dev/null 2>&1
-cd $HOME/BOT
-wget https://kguza.net/sshplus-vip/Install/ShellBot.sh >/dev/null 2>&1
-chmod 777 ShellBot.sh > /dev/null 2>&1
 cd > /dev/null 2>&1
 #-----------------------------------------------------------------------------------------------------------------
 echo -e "\n\033[1;32mคีย์ถูกต้อง!\033[1;32m"

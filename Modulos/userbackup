@@ -150,7 +150,7 @@ backbot=$1
 	fi
 } || {
 	rm /root/backup.vps 1>/dev/null 2>/dev/null
-	tar cvf /root/backup.vps /root/usuarios.db /etc/shadow /etc/passwd /etc/group /etc/gshadow /etc/bot /etc/SSHPlus/senha > /dev/null 2>&1
+	tar cvf /root/backup.vps /root/usuarios.db /etc/shadow /etc/passwd /etc/group /etc/gshadow /etc/SSHPlus/senha > /dev/null 2>&1
 	[[ -d "/etc/SSHPlus/backups" ]] && mv /root/backup.vps /etc/SSHPlus/backups/backup.vps
 	exit
 }
