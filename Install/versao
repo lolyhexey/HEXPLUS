@@ -1,7 +1,9 @@
-VERSAO: 46
+VERSAO: 47
 
 @lolyhexey
 
+wsproxy.py ถาม DEFAULT HOST + RESPONSE MSG ตอน start ปรับแต่งได้ + มี default ให้
+wsproxy.py ใช้ HTTP/1.1 101 spoof handshake แล้ว ไม่ใช่ 200 CONNECT อีก
 เมนู PROXY SOCKS เพิ่มบรรทัด PORTAS สรุปด้านบน + เก็บ (พอร์ต: ...) inline ของเดิมไว้ด้วย
 SOCKS OPENVPN (open.py) อ่าน OpenVPN port จาก server.conf เอง ไม่ hardcode 1194 แล้ว
 แก้ criarusuario newclient ใช้ชื่อไฟล์ cert ผิด (ca.pem→ca.crt) + ใส่ server cert แทน client cert

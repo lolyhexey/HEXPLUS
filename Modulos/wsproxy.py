@@ -10,8 +10,12 @@ except:
     LISTENING_PORT = 80
 BUFLEN = 4096 * 4
 TIMEOUT = 60
-DEFAULT_HOST = '127.0.0.1:22'
-RESPONSE = b"HTTP/1.1 200 Connection established\r\n\r\n"
+# Optional positional args:
+#   argv[2] = DEFAULT_HOST  (host:port to tunnel to when client omits X-Real-Host)
+#   argv[3] = RESPONSE_MSG  (status text inserted into the spoof 101 handshake)
+DEFAULT_HOST = sys.argv[2] if len(sys.argv) > 2 and sys.argv[2] else '127.0.0.1:22'
+_response_msg = sys.argv[3] if len(sys.argv) > 3 and sys.argv[3] else 'HEXPLUS'
+RESPONSE = ('HTTP/1.1 101 <font color="null">' + _response_msg + '</font>\r\n\r\n').encode()
 
 log_lock = asyncio.Lock()
 

@@ -1582,14 +1582,20 @@ exit 0' >$RCLOCAL
 					fun_conexao
 				}
 				verif_ptrs $porta
+				echo -ne "\033[1;32mDEFAULT HOST \033[1;33m(\033[1;37mhost:port ที่จะ tunnel เมื่อ client ไม่ส่ง X-Real-Host\033[1;33m) \033[1;37m[\033[1;32m127.0.0.1:22\033[1;37m]: "
+				read def_host
+				[[ -z "$def_host" ]] && def_host="127.0.0.1:22"
+				echo -ne "\033[1;32mRESPONSE MSG \033[1;33m(\033[1;37mข้อความใน HTTP/1.1 101 spoof handshake\033[1;33m) \033[1;37m[\033[1;32mHEXPLUS\033[1;37m]: "
+				read resp_msg
+				[[ -z "$resp_msg" ]] && resp_msg="HEXPLUS"
 				fun_iniwssocks() {
 					sleep 1
-					screen -dmS ws python3 /etc/SSHPlus/wsproxy.py $porta
+					screen -dmS ws python3 /etc/SSHPlus/wsproxy.py $porta "$def_host" "$resp_msg"
 					[[ $(grep -wc "wsproxy.py" /etc/autostart) = '0' ]] && {
-						echo -e "netstat -tlpn | grep -w $porta > /dev/null || {  screen -r -S 'ws' -X quit;  screen -dmS ws python3 /etc/SSHPlus/wsproxy.py $porta; }" >>/etc/autostart
+						echo -e "netstat -tlpn | grep -w $porta > /dev/null || {  screen -r -S 'ws' -X quit;  screen -dmS ws python3 /etc/SSHPlus/wsproxy.py $porta '$def_host' '$resp_msg'; }" >>/etc/autostart
 					} || {
 						sed -i '/wsproxy.py/d' /etc/autostart
-						echo -e "netstat -tlpn | grep -w $porta > /dev/null || {  screen -r -S 'ws' -X quit;  screen -dmS ws python3 /etc/SSHPlus/wsproxy.py $porta; }" >>/etc/autostart
+						echo -e "netstat -tlpn | grep -w $porta > /dev/null || {  screen -r -S 'ws' -X quit;  screen -dmS ws python3 /etc/SSHPlus/wsproxy.py $porta '$def_host' '$resp_msg'; }" >>/etc/autostart
 					}
 				}
 				echo ""
