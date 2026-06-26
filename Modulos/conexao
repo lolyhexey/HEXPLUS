@@ -1463,19 +1463,19 @@ exit 0' >$RCLOCAL
 		clear
 		echo -e "\E[44;1;37m            จัดการ PROXY SOCKS             \E[0m"
 		echo ""
-		[[ $(netstat -nplt | grep -wc 'python') != '0' ]] && {
-			sks='\033[1;32mON'
-			echo -e "\033[1;33mพอร์ต\033[1;37m: \033[1;32m$(netstat -nplt | grep 'python' | awk {'print $4'} | cut -d: -f2 | xargs)"
-		} || {
-			sks='\033[1;31mOFF'
-		}
+		pt_proxy=$(sed -nE "s|.*screen -dmS proxy python3? /etc/SSHPlus/proxy\.py ([0-9]+).*|\1|p" /etc/autostart 2>/dev/null | head -1)
+		pt_ws=$(sed -nE "s|.*screen -dmS ws python3? /etc/SSHPlus/wsproxy\.py ([0-9]+).*|\1|p" /etc/autostart 2>/dev/null | head -1)
+		pt_open=$(sed -nE "s|.*screen -dmS openpy python3? /etc/SSHPlus/open\.py ([0-9]+).*|\1|p" /etc/autostart 2>/dev/null | head -1)
 		[[ $(screen -list | grep -wc 'proxy') != '0' ]] && var_sks1="\033[1;32m◉" || var_sks1="\033[1;31m○"
 		[[ $(screen -list | grep -wc 'ws') != '0' ]] && var_sks2="\033[1;32m◉" || var_sks2="\033[1;31m○"
 		[[ $(screen -list | grep -wc 'openpy') != '0' ]] && sksop="\033[1;32m◉" || sksop="\033[1;31m○"
+		[[ "$var_sks1" == *◉* && -n "$pt_proxy" ]] && lbl_pt1=" \033[1;36m(พอร์ต: $pt_proxy)" || lbl_pt1=""
+		[[ "$var_sks2" == *◉* && -n "$pt_ws" ]] && lbl_pt2=" \033[1;36m(พอร์ต: $pt_ws)" || lbl_pt2=""
+		[[ "$sksop" == *◉* && -n "$pt_open" ]] && lbl_pt3=" \033[1;36m(พอร์ต: $pt_open)" || lbl_pt3=""
 		echo ""
-		echo -e "\033[1;31m[\033[1;36m1\033[1;31m] \033[1;37m• \033[1;33mSOCKS SSH $var_sks1 \033[0m"
-		echo -e "\033[1;31m[\033[1;36m2\033[1;31m] \033[1;37m• \033[1;33mWEBSOCKET $var_sks2 \033[0m"
-		echo -e "\033[1;31m[\033[1;36m3\033[1;31m] \033[1;37m• \033[1;33mSOCKS OPENVPN $sksop \033[0m"
+		echo -e "\033[1;31m[\033[1;36m1\033[1;31m] \033[1;37m• \033[1;33mSOCKS SSH $var_sks1$lbl_pt1 \033[0m"
+		echo -e "\033[1;31m[\033[1;36m2\033[1;31m] \033[1;37m• \033[1;33mWEBSOCKET $var_sks2$lbl_pt2 \033[0m"
+		echo -e "\033[1;31m[\033[1;36m3\033[1;31m] \033[1;37m• \033[1;33mSOCKS OPENVPN $sksop$lbl_pt3 \033[0m"
 		echo -e "\033[1;31m[\033[1;36m4\033[1;31m] \033[1;37m• \033[1;33mเปิดพอร์ต\033[0m"
 		echo -e "\033[1;31m[\033[1;36m5\033[1;31m] \033[1;37m• \033[1;33mเปลี่ยนสถานะ SOCKS SSH\033[0m"
 		echo -e "\033[1;31m[\033[1;36m6\033[1;31m] \033[1;37m• \033[1;33mเปลี่ยนสถานะ WEBSOCKET\033[0m"
