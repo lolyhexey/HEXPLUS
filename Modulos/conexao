@@ -1487,7 +1487,7 @@ exit 0' >$RCLOCAL
 		[[ "$var_sks2" == *◉* && -n "$pt_ws" ]] && _all_pts="$_all_pts $pt_ws"
 		[[ "$sksop" == *◉* && -n "$pt_open" ]] && _all_pts="$_all_pts $pt_open"
 		_all_pts="${_all_pts# }"
-		[[ -n "$_all_pts" ]] && echo -e "\033[1;33mPORTAS\033[1;37m: \033[1;32m$_all_pts"
+		[[ -n "$_all_pts" ]] && echo -e "\033[1;33mพอร์ตที่เปิด\033[1;37m: \033[1;32m$_all_pts"
 		echo ""
 		echo -e "\033[1;31m[\033[1;36m1\033[1;31m] \033[1;37m• \033[1;33mSOCKS SSH $var_sks1$lbl_pt1 \033[0m"
 		echo -e "\033[1;31m[\033[1;36m2\033[1;31m] \033[1;37m• \033[1;33mWEBSOCKET $var_sks2$lbl_pt2 \033[0m"
