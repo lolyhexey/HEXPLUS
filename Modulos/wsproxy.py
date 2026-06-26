@@ -17,6 +17,9 @@ TIMEOUT = 60
 DEFAULT_HOST = sys.argv[2] if len(sys.argv) > 2 and sys.argv[2] else '127.0.0.1:22'
 _status_code = sys.argv[3] if len(sys.argv) > 3 and sys.argv[3] else '101'
 _status_msg = sys.argv[4] if len(sys.argv) > 4 and sys.argv[4] else '<font color="null">HEXPLUS</font>'
+# Allow literal \r\n / \n in the msg so users can append extra headers
+# e.g. 'Connection established\r\nContent-length: 0'
+_status_msg = _status_msg.replace('\\r\\n', '\r\n').replace('\\n', '\n')
 RESPONSE = ('HTTP/1.1 ' + _status_code + ' ' + _status_msg + '\r\n\r\n').encode()
 
 log_lock = asyncio.Lock()

@@ -1596,23 +1596,24 @@ exit 0' >$RCLOCAL
 				echo ""
 				echo -e "\033[1;32mเลือก RESPONSE STATUS CODE:\033[0m"
 				echo -e "  \033[1;31m[\033[1;36m1\033[1;31m] \033[1;33m101 \033[1;37m- WebSocket spoof handshake \033[1;31m(\033[1;32mแนะนำ — bypass DPI\033[1;31m)\033[0m"
-				echo -e "  \033[1;31m[\033[1;36m2\033[1;31m] \033[1;33m200 \033[1;37m- HTTP CONNECT proxy\033[0m"
-				echo -e "  \033[1;31m[\033[1;36m3\033[1;31m] \033[1;33m400 \033[1;37m- Bad Request spoof\033[0m"
-				echo -e "  \033[1;31m[\033[1;36m4\033[1;31m] \033[1;33m520 \033[1;37m- Cloudflare error spoof\033[0m"
+				echo -e "  \033[1;31m[\033[1;36m2\033[1;31m] \033[1;33m200 \033[1;37m- HTTP CONNECT proxy + Content-length\033[0m"
+				echo -e "  \033[1;31m[\033[1;36m3\033[1;31m] \033[1;33m400 \033[1;37m- Bad Request spoof + Content-length\033[0m"
+				echo -e "  \033[1;31m[\033[1;36m4\033[1;31m] \033[1;33m520 \033[1;37m- Cloudflare error spoof + Content-length\033[0m"
 				echo -e "  \033[1;31m[\033[1;36m5\033[1;31m] \033[1;33mกำหนดเอง\033[0m"
 				echo -ne "\033[1;32mเลือก \033[1;37m[\033[1;33m1-5\033[1;37m] (default: \033[1;32m1\033[1;37m): "
 				read code_opt
 				case "$code_opt" in
-					2) status_code="200"; default_msg="Connection established";;
-					3) status_code="400"; default_msg='<font color="null">HEXPLUS</font>';;
-					4) status_code="520"; default_msg='<font color="null">HEXPLUS</font>';;
+					2) status_code="200"; default_msg='Connection established\r\nContent-length: 0';;
+					3) status_code="400"; default_msg='<font color="null">HEXPLUS</font>\r\nContent-length: 0';;
+					4) status_code="520"; default_msg='<font color="null">HEXPLUS</font>\r\nContent-length: 0';;
 					5) echo -ne "\033[1;32mSTATUS CODE \033[1;33m(\033[1;37mเช่น 101, 200, 418\033[1;33m)\033[1;37m: "
 					   read status_code
 					   [[ -z "$status_code" || ! "$status_code" =~ ^[0-9]+$ ]] && status_code="101"
 					   default_msg='<font color="null">HEXPLUS</font>';;
 					*) status_code="101"; default_msg='<font color="null">HEXPLUS</font>';;
 				esac
-				echo -ne "\033[1;32mRESPONSE MSG \033[1;33m(\033[1;37mข้อความหลัง code\033[1;33m) \033[1;37m[\033[1;32m$default_msg\033[1;37m]: "
+				echo -e "\033[1;33m  เพิ่ม header ได้โดยใส่ \033[1;36m\\\\r\\\\n \033[1;33m(เช่น 'OK\\\\r\\\\nContent-length: 0')\033[0m"
+				echo -ne "\033[1;32mRESPONSE MSG \033[1;37m[\033[1;32m$default_msg\033[1;37m]: "
 				read status_msg
 				[[ -z "$status_msg" ]] && status_msg="$default_msg"
 				fun_iniwssocks() {

@@ -1,10 +1,12 @@
-VERSAO: 50
+VERSAO: 51
 
 @lolyhexey
 
+RESPONSE MSG ใส่ headers เพิ่มได้ผ่าน \r\n (เช่น Content-length: 0)
+default ของ code 200/400/520 มี Content-length: 0 ติดมาด้วยแล้ว
 ระบบ update script เขียนใหม่: guard figlet, โหลด Plus ลง /root, ตรวจไฟล์จริงไม่ใช่ 404
 release notes ตอน attscript ตอนนี้ข้าม VERSAO/author/footer โชว์เฉพาะรายการแก้
-แสดงเวอร์ชันเก่า → ใหม่ ตอนพบอัปเดต (v49 → v50)
+แสดงเวอร์ชันเก่า → ใหม่ ตอนพบอัปเดต (v50 → v51)
 แก้บั๊ก PORTAS โชว์ args ของ wsproxy.py เกินมา + แก้ xargs unmatched quote
 wsproxy.py เลือก STATUS CODE ได้ตอน start: 101/200/400/520/custom พร้อม default msg ของแต่ละ code
 wsproxy.py ถาม DEFAULT HOST + RESPONSE MSG ตอน start ปรับแต่งได้ + มี default ให้
