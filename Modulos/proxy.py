@@ -1,8 +1,14 @@
 #!/usr/bin/env python3
 # encoding: utf-8
-import asyncio, sys
+import asyncio, socket, sys
 from os import system
 system("clear")
+
+try:
+    import uvloop
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+except ImportError:
+    pass
 
 IP = '0.0.0.0'
 try:
@@ -11,9 +17,33 @@ except:
     PORT = 80
 PASS = ''
 BUFLEN = 8196 * 8
-TIMEOUT = 60
-DEFAULT_HOST = '0.0.0.0:22'
-RESPONSE = b"HTTP/1.1 200 Connection established\r\n\r\n"
+# Optional positional args:
+#   argv[2] = DEFAULT_HOST    (host:port to tunnel to when client omits X-Real-Host)
+#   argv[3] = STATUS_CODE     (HTTP code in the response, e.g. 101, 200, 400, 520)
+#   argv[4] = STATUS_MSG      (text after the code; may include \r\n for extra headers)
+DEFAULT_HOST = sys.argv[2] if len(sys.argv) > 2 and sys.argv[2] else '127.0.0.1:22'
+_status_code = sys.argv[3] if len(sys.argv) > 3 and sys.argv[3] else '200'
+_status_msg = sys.argv[4] if len(sys.argv) > 4 and sys.argv[4] else 'Connection established\\r\\nContent-length: 0'
+_status_msg = _status_msg.replace('\\r\\n', '\r\n').replace('\\n', '\n')
+RESPONSE = ('HTTP/1.1 ' + _status_code + ' ' + _status_msg + '\r\n\r\n').encode()
+ALLOWED_PREFIXES = ('127.0.0.1', '0.0.0.0', 'localhost')
+
+
+def _tune_socket(writer):
+    try:
+        sock = writer.get_extra_info('socket')
+        if sock is None:
+            return
+        sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
+        if hasattr(socket, 'TCP_KEEPIDLE'):
+            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, 30)
+        if hasattr(socket, 'TCP_KEEPINTVL'):
+            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, 10)
+        if hasattr(socket, 'TCP_KEEPCNT'):
+            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, 3)
+    except OSError:
+        pass
 
 
 def find_header(head, header):
@@ -38,7 +68,7 @@ def parse_host(host, default_port=22):
 async def pipe(reader, writer):
     try:
         while True:
-            data = await asyncio.wait_for(reader.read(BUFLEN), timeout=TIMEOUT)
+            data = await reader.read(BUFLEN)
             if not data:
                 break
             writer.write(data)
@@ -48,9 +78,12 @@ async def pipe(reader, writer):
 
 
 async def handle_client(client_reader, client_writer):
+    _tune_socket(client_writer)
     target_writer = None
     try:
-        data = await asyncio.wait_for(client_reader.read(BUFLEN), timeout=TIMEOUT)
+        data = await client_reader.read(BUFLEN)
+        if not data:
+            return
         client_buffer = data.decode('utf-8', errors='replace')
 
         host_port = find_header(client_buffer, 'X-Real-Host')
@@ -71,9 +104,10 @@ async def handle_client(client_reader, client_writer):
                 await client_writer.drain()
                 return
 
-            if host_port.startswith(IP):
+            if any(host_port.startswith(h) for h in ALLOWED_PREFIXES):
                 host, port = parse_host(host_port)
                 target_reader, target_writer = await asyncio.open_connection(host, port)
+                _tune_socket(target_writer)
                 client_writer.write(RESPONSE)
                 await client_writer.drain()
                 await asyncio.gather(
@@ -84,7 +118,6 @@ async def handle_client(client_reader, client_writer):
                 client_writer.write(b'HTTP/1.1 403 Forbidden!\r\n\r\n')
                 await client_writer.drain()
         else:
-            print('- No X-Real-Host!')
             client_writer.write(b'HTTP/1.1 400 NoXRealHost!\r\n\r\n')
             await client_writer.drain()
 

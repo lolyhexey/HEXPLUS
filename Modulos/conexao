@@ -1535,14 +1535,40 @@ exit 0' >$RCLOCAL
 					fun_conexao
 				}
 				verif_ptrs $porta
+				echo -ne "\033[1;32mDEFAULT HOST \033[1;33m(\033[1;37mhost:port ที่จะ tunnel เมื่อ client ไม่ส่ง X-Real-Host\033[1;33m) \033[1;37m[\033[1;32m127.0.0.1:22\033[1;37m]: "
+				read def_host
+				[[ -z "$def_host" ]] && def_host="127.0.0.1:22"
+				echo ""
+				echo -e "\033[1;32mเลือก RESPONSE STATUS CODE:\033[0m"
+				echo -e "  \033[1;31m[\033[1;36m1\033[1;31m] \033[1;33m200 \033[1;37m- HTTP CONNECT proxy + Content-length \033[1;31m(\033[1;32mแนะนำ — สำหรับ SOCKS SSH\033[1;31m)\033[0m"
+				echo -e "  \033[1;31m[\033[1;36m2\033[1;31m] \033[1;33m101 \033[1;37m- WebSocket spoof handshake\033[0m"
+				echo -e "  \033[1;31m[\033[1;36m3\033[1;31m] \033[1;33m400 \033[1;37m- Bad Request spoof + Content-length\033[0m"
+				echo -e "  \033[1;31m[\033[1;36m4\033[1;31m] \033[1;33m520 \033[1;37m- Cloudflare error spoof + Content-length\033[0m"
+				echo -e "  \033[1;31m[\033[1;36m5\033[1;31m] \033[1;33mกำหนดเอง\033[0m"
+				echo -ne "\033[1;32mเลือก \033[1;37m[\033[1;33m1-5\033[1;37m] (default: \033[1;32m1\033[1;37m): "
+				read code_opt
+				case "$code_opt" in
+					2) status_code="101"; default_msg='<font color="null">HEXPLUS</font>';;
+					3) status_code="400"; default_msg='<font color="null">HEXPLUS</font>\r\nContent-length: 0';;
+					4) status_code="520"; default_msg='<font color="null">HEXPLUS</font>\r\nContent-length: 0';;
+					5) echo -ne "\033[1;32mSTATUS CODE \033[1;33m(\033[1;37mเช่น 101, 200, 418\033[1;33m)\033[1;37m: "
+					   read status_code
+					   [[ -z "$status_code" || ! "$status_code" =~ ^[0-9]+$ ]] && status_code="200"
+					   default_msg='Connection established\r\nContent-length: 0';;
+					*) status_code="200"; default_msg='Connection established\r\nContent-length: 0';;
+				esac
+				echo -e "\033[1;33m  เพิ่ม header ได้โดยใส่ \033[1;36m\\\\r\\\\n \033[1;33m(เช่น 'OK\\\\r\\\\nContent-length: 0')\033[0m"
+				echo -ne "\033[1;32mRESPONSE MSG \033[1;37m[\033[1;32m$default_msg\033[1;37m]: "
+				read status_msg
+				[[ -z "$status_msg" ]] && status_msg="$default_msg"
 				fun_inisocks() {
 					sleep 1
-					screen -dmS proxy python3 /etc/SSHPlus/proxy.py $porta
+					screen -dmS proxy python3 /etc/SSHPlus/proxy.py $porta "$def_host" "$status_code" "$status_msg"
 					[[ $(grep -wc "proxy.py" /etc/autostart) = '0' ]] && {
-						echo -e "netstat -tlpn | grep -w $porta > /dev/null || {  screen -r -S 'proxy' -X quit;  screen -dmS proxy python3 /etc/SSHPlus/proxy.py $porta; }" >>/etc/autostart
+						echo -e "netstat -tlpn | grep -w $porta > /dev/null || {  screen -r -S 'proxy' -X quit;  screen -dmS proxy python3 /etc/SSHPlus/proxy.py $porta '$def_host' '$status_code' '$status_msg'; }" >>/etc/autostart
 					} || {
 						sed -i '/proxy.py/d' /etc/autostart
-						echo -e "netstat -tlpn | grep -w $porta > /dev/null || {  screen -r -S 'proxy' -X quit;  screen -dmS proxy python3 /etc/SSHPlus/proxy.py $porta; }" >>/etc/autostart
+						echo -e "netstat -tlpn | grep -w $porta > /dev/null || {  screen -r -S 'proxy' -X quit;  screen -dmS proxy python3 /etc/SSHPlus/proxy.py $porta '$def_host' '$status_code' '$status_msg'; }" >>/etc/autostart
 					}
 				}
 				echo ""
@@ -1671,19 +1697,43 @@ exit 0' >$RCLOCAL
 					fun_conexao
 				}
 				verif_ptrs $porta
+				_ovpn_port=$(grep -E '^port +[0-9]+' /etc/openvpn/server.conf 2>/dev/null | head -1 | awk '{print $2}')
+				[[ -z "$_ovpn_port" ]] && _ovpn_port="1194"
+				_def_host_default="0.0.0.0:$_ovpn_port"
+				echo -ne "\033[1;32mDEFAULT HOST \033[1;33m(\033[1;37mhost:port ของ OpenVPN — auto-detect จาก server.conf\033[1;33m) \033[1;37m[\033[1;32m$_def_host_default\033[1;37m]: "
+				read def_host
+				[[ -z "$def_host" ]] && def_host="$_def_host_default"
+				echo ""
+				echo -e "\033[1;32mเลือก RESPONSE STATUS CODE:\033[0m"
+				echo -e "  \033[1;31m[\033[1;36m1\033[1;31m] \033[1;33m101 \033[1;37m- WebSocket spoof handshake \033[1;31m(\033[1;32mแนะนำ — bypass DPI\033[1;31m)\033[0m"
+				echo -e "  \033[1;31m[\033[1;36m2\033[1;31m] \033[1;33m200 \033[1;37m- HTTP CONNECT proxy + Content-length\033[0m"
+				echo -e "  \033[1;31m[\033[1;36m3\033[1;31m] \033[1;33m400 \033[1;37m- Bad Request spoof + Content-length\033[0m"
+				echo -e "  \033[1;31m[\033[1;36m4\033[1;31m] \033[1;33m520 \033[1;37m- Cloudflare error spoof + Content-length\033[0m"
+				echo -e "  \033[1;31m[\033[1;36m5\033[1;31m] \033[1;33mกำหนดเอง\033[0m"
+				echo -ne "\033[1;32mเลือก \033[1;37m[\033[1;33m1-5\033[1;37m] (default: \033[1;32m1\033[1;37m): "
+				read code_opt
+				case "$code_opt" in
+					2) status_code="200"; default_msg='Connection established\r\nContent-length: 0';;
+					3) status_code="400"; default_msg='<font color="null">HEXPLUS</font>\r\nContent-length: 0';;
+					4) status_code="520"; default_msg='<font color="null">HEXPLUS</font>\r\nContent-length: 0';;
+					5) echo -ne "\033[1;32mSTATUS CODE \033[1;33m(\033[1;37mเช่น 101, 200, 418\033[1;33m)\033[1;37m: "
+					   read status_code
+					   [[ -z "$status_code" || ! "$status_code" =~ ^[0-9]+$ ]] && status_code="101"
+					   default_msg='<font color="null">HEXPLUS</font>';;
+					*) status_code="101"; default_msg='<font color="null">HEXPLUS</font>';;
+				esac
+				echo -e "\033[1;33m  เพิ่ม header ได้โดยใส่ \033[1;36m\\\\r\\\\n \033[1;33m(เช่น 'OK\\\\r\\\\nContent-length: 0')\033[0m"
+				echo -ne "\033[1;32mRESPONSE MSG \033[1;37m[\033[1;32m$default_msg\033[1;37m]: "
+				read status_msg
+				[[ -z "$status_msg" ]] && status_msg="$default_msg"
 				fun_inisocksop() {
-					[[ "$(netstat -tlpn | grep 'openvpn' | wc -l)" != '0' ]] && {
-						listoldop=$(grep -w 'DEFAULT_HOST =' /etc/SSHPlus/open.py | cut -d"'" -f2 | cut -d: -f2)
-						listopen=$(netstat -tlpn | grep -w openvpn | grep -v 127.0.0.1 | awk {'print $4'} | cut -d: -f2)
-						sed -i "s/$listoldop/$listopen/" /etc/SSHPlus/open.py
-					}
 					sleep 1
-					screen -dmS openpy python3 /etc/SSHPlus/open.py $porta
+					screen -dmS openpy python3 /etc/SSHPlus/open.py $porta "$def_host" "$status_code" "$status_msg"
 					[[ $(grep -wc "open.py" /etc/autostart) = '0' ]] && {
-						echo -e "netstat -tlpn | grep -w $porta > /dev/null || {  screen -r -S 'openpy' -X quit;  screen -dmS openpy python3 /etc/SSHPlus/open.py $porta; }" >>/etc/autostart
+						echo -e "netstat -tlpn | grep -w $porta > /dev/null || {  screen -r -S 'openpy' -X quit;  screen -dmS openpy python3 /etc/SSHPlus/open.py $porta '$def_host' '$status_code' '$status_msg'; }" >>/etc/autostart
 					} || {
 						sed -i '/open.py/d' /etc/autostart
-						echo -e "netstat -tlpn | grep -w $porta > /dev/null || {  screen -r -S 'openpy' -X quit;  screen -dmS openpy python3 /etc/SSHPlus/open.py $porta; }" >>/etc/autostart
+						echo -e "netstat -tlpn | grep -w $porta > /dev/null || {  screen -r -S 'openpy' -X quit;  screen -dmS openpy python3 /etc/SSHPlus/open.py $porta '$def_host' '$status_code' '$status_msg'; }" >>/etc/autostart
 					}
 				}
 				echo ""
