@@ -273,8 +273,8 @@ echo -ne "\033[1;32mcreateuser:\033[1;37m ";read username
 	echo -e "\n\033[1;31m[ผิดพลาด]\033[1;33m สร้างผู้ใช้ไม่สำเร็จ: มีผู้ใช้ชื่อนี้อยู่แล้ว — กรุณาใช้ชื่ออื่น\033[0m\n"
 	exit 1
 }
-[[ ${username} != ?(+|-)+([a-zA-Z0-9]) ]] && {
-	echo -e "\n\033[1;31m[ผิดพลาด]\033[1;33m ชื่อผู้ใช้ไม่ถูกต้อง: ชื่อผู้ใช้ต้องไม่มีช่องว่างหรืออักขระพิเศษ — ใช้ได้เฉพาะตัวอักษรภาษาอังกฤษ (a-z, A-Z) และตัวเลข (0-9)\033[0m\n"
+[[ ! "$username" =~ ^[a-zA-Z][a-zA-Z0-9_-]*$ ]] && {
+	echo -e "\n\033[1;31m[ผิดพลาด]\033[1;33m ชื่อผู้ใช้ไม่ถูกต้อง: ต้องขึ้นต้นด้วยตัวอักษร a-z หรือ A-Z แล้วตามด้วย a-z, A-Z, 0-9, _ หรือ - (ห้ามขึ้นต้นด้วยตัวเลข, ห้ามมีช่องว่างหรืออักขระพิเศษ)\033[0m\n"
 	exit 1
 }
 sizemin=$(echo ${#username})
@@ -326,8 +326,13 @@ echo -ne "\033[1;32mlimited connection:\033[1;37m ";read sshlimiter
 final=$(date "+%Y-%m-%d" -d "+$dias days")
 gui=$(date "+%d/%m/%Y" -d "+$dias days")
 pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
-useradd -e $final -M -s /bin/false -p $pass $username >/dev/null 2>&1 || {
-	echo -e "\n\033[1;31m[ผิดพลาด]\033[1;33m สร้างผู้ใช้ไม่สำเร็จ: คำสั่ง useradd ล้มเหลว — ตรวจสอบว่ารันด้วยสิทธิ์ root และชื่อผู้ใช้ไม่ซ้ำกับระบบ แล้วลองใหม่อีกครั้ง\033[0m\n"
+HEXPLUS_LOG="${HEXPLUS_LOG:-/var/log/hexplus-install.log}"
+mkdir -p "$(dirname "$HEXPLUS_LOG")" 2>/dev/null
+_useradd_err=$(useradd -e $final -M -s /bin/false -p $pass $username 2>&1)
+[[ $? -ne 0 ]] && {
+	echo "===== $(date '+%Y-%m-%d %H:%M:%S') | useradd $username failed =====" >>"$HEXPLUS_LOG"
+	echo "$_useradd_err" >>"$HEXPLUS_LOG"
+	echo -e "\n\033[1;31m[ผิดพลาด]\033[1;33m สร้างผู้ใช้ไม่สำเร็จ:\n  \033[1;36m$_useradd_err\033[1;33m\n  ดู log: \033[1;36m$HEXPLUS_LOG\033[0m\n"
 	exit 1
 }
 echo "$password" >/etc/SSHPlus/senha/$username

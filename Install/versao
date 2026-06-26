@@ -1,7 +1,9 @@
-VERSAO: 42
+VERSAO: 43
 
 @lolyhexey
 
+แก้ createuser ไม่ให้ยอมรับชื่อขึ้นต้นด้วยตัวเลข (useradd ปฏิเสธ)
+error createuser ตอนนี้โชว์ข้อความจริงจาก useradd + path log
 แก้เมนู PROXY SOCKS ไม่โชว์พอร์ต: grep -w python ไม่ match python3
 ตอนนี้แต่ละระบบโชว์พอร์ตของตัวเองข้าง ◉ ทันที (อ่านจาก /etc/autostart)
 แก้ OpenVPN เริ่มไม่ได้บน Ubuntu 22+: client-cert-not-required ถูกถอด ใช้ verify-client-cert none แทน
