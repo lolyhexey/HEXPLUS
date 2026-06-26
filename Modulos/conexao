@@ -573,9 +573,9 @@ refresh_pattern .               0       20%     4320
 					echo -e "\n${cor1}ชื่อผู้ใช้ว่างเปล่าหรือไม่ถูกต้อง!${scor}\n"
 					fun_chisel
 				}
-				[[ ${username} != ?(+|-)+([a-zA-Z0-9]) ]] && {
+				[[ ! "$username" =~ ^[a-zA-Z][a-zA-Z0-9_-]*$ ]] && {
 					echo -e "\n${cor1}คุณใส่ชื่อผู้ใช้ไม่ถูกต้อง!${scor}"
-					echo -e "${cor1}ห้ามใช้ช่องว่างหรืออักขระพิเศษ!${scor}\n"
+					echo -e "${cor1}ต้องขึ้นต้นด้วยตัวอักษร a-z, A-Z ตามด้วย a-z, A-Z, 0-9, _ หรือ -!${scor}\n"
 					fun_chisel
 				}
 				sizemin=$(echo ${#username})
@@ -1342,8 +1342,9 @@ ifconfig-pool-persist ipp.txt" >/etc/openvpn/server.conf
 					;;
 				esac
 				echo "keepalive 10 120
+data-ciphers AES-256-GCM:AES-128-GCM:AES-256-CBC
+data-ciphers-fallback AES-256-CBC
 cipher AES-256-CBC
-comp-lzo yes
 persist-key
 persist-tun
 status openvpn-status.log
@@ -1434,8 +1435,9 @@ exit 0' >$RCLOCAL
 				persist-key
 				persist-tun
 				remote-cert-tls server
+				data-ciphers AES-256-GCM:AES-128-GCM:AES-256-CBC
+				data-ciphers-fallback AES-256-CBC
 				cipher AES-256-CBC
-				comp-lzo yes
 				setenv opt block-outside-dns
 				key-direction 1
 				verb 3

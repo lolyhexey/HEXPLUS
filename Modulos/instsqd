@@ -1,12 +1,13 @@
 clear
 op=$1
 [[ ! -d /usr/share/.plus ]] && exit 0
+HEXPLUS_TRUSTY_KEYRING=/usr/share/keyrings/hexplus-trusty-archive.gpg
 fun_sqd01() {
 [[ -e /etc/apt/sources.list.d/trusty_sources.list ]] && {
 rm /etc/apt/sources.list.d/trusty_sources.list >/dev/null 2>&1
-[[ $(grep -wc 'Debian' /etc/issue.net) != '0' ]] && {
+rm -f "$HEXPLUS_TRUSTY_KEYRING" >/dev/null 2>&1
 apt-key del 3B4FE6ACC0B21F32 >/dev/null 2>&1
-}
+apt-key del 40976EAF437D05B5 >/dev/null 2>&1
 apt remove squid3=3.3.8-1ubuntu6 squid=3.3.8-1ubuntu6 squid3-common=3.3.8-1ubuntu6 -y >/dev/null 2>&1
 apt update -y >/dev/null 2>&1
 apt autoremove -y >/dev/null 2>&1
@@ -17,17 +18,15 @@ echo -e "\033[1;31m[ผิดพลาด]\033[1;33m ติดตั้ง Squid
 }
 }
 fun_sqd02() {
-[[ ! -e /etc/apt/sources.list.d/trusty_sources.list ]] && {
-touch /etc/apt/sources.list.d/trusty_sources.list >/dev/null 2>&1
-echo "deb http://us.archive.ubuntu.com/ubuntu/ trusty main universe" | tee --append /etc/apt/sources.list.d/trusty_sources.list >/dev/null 2>&1
-}
 apt install dirmngr gnupg -y >/dev/null 2>&1
+mkdir -p /usr/share/keyrings >/dev/null 2>&1
 for _key in 3B4FE6ACC0B21F32 40976EAF437D05B5; do
-[[ $(apt-key list 2>/dev/null | grep -c "$_key") == '0' ]] && {
-apt-key adv --keyserver keyserver.ubuntu.com --recv-keys "$_key" >/dev/null 2>&1 || \
-apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys "$_key" >/dev/null 2>&1
-}
+gpg --no-default-keyring --keyring "$HEXPLUS_TRUSTY_KEYRING" --keyserver keyserver.ubuntu.com --recv-keys "$_key" >/dev/null 2>&1 || \
+gpg --no-default-keyring --keyring "$HEXPLUS_TRUSTY_KEYRING" --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys "$_key" >/dev/null 2>&1
 done
+chmod 644 "$HEXPLUS_TRUSTY_KEYRING" >/dev/null 2>&1
+rm -f /etc/apt/sources.list.d/trusty_sources.list >/dev/null 2>&1
+echo "deb [signed-by=$HEXPLUS_TRUSTY_KEYRING] http://us.archive.ubuntu.com/ubuntu/ trusty main universe" >/etc/apt/sources.list.d/trusty_sources.list
 apt update -y >/dev/null 2>&1
 apt install squid3=3.3.8-1ubuntu6 squid=3.3.8-1ubuntu6 squid3-common=3.3.8-1ubuntu6 -y >/dev/null 2>&1
 [[ $? != 0 ]] && {

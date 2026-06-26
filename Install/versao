@@ -1,7 +1,13 @@
-VERSAO: 43
+VERSAO: 44
 
 @lolyhexey
 
+แก้ criarusuario newclient ใช้ชื่อไฟล์ cert ผิด (ca.pem→ca.crt) + ใส่ server cert แทน client cert
+แก้ criarteste ห้ามชื่อขึ้นต้นด้วยตัวเลข + error capture stderr
+ลบ comp-lzo yes ออกจาก OpenVPN config (แตก OpenVPN 2.6 / Ubuntu 24)
+เพิ่ม data-ciphers ใน OpenVPN รองรับ negotiation cipher ใหม่
+แก้ chisel username ห้ามขึ้นต้นด้วยตัวเลขหรือเครื่องหมาย
+ย้าย instsqd จาก apt-key (deprecated) มาใช้ signed-by keyring รองรับ Ubuntu 24
 แก้ createuser ไม่ให้ยอมรับชื่อขึ้นต้นด้วยตัวเลข (useradd ปฏิเสธ)
 error createuser ตอนนี้โชว์ข้อความจริงจาก useradd + path log
 แก้เมนู PROXY SOCKS ไม่โชว์พอร์ต: grep -w python ไม่ match python3
@@ -12,7 +18,6 @@ error createuser ตอนนี้โชว์ข้อความจริง
 ข้อความ error ตอนนี้บอก path log + คำสั่งดู error ทันที
 แก้บั๊ก figlet หาไม่เจอตอนเริ่มต้น Plus
 ปิดเสียง output ที่หลุดมาตอนติดตั้งแพ็กเกจ
-เพิ่ม GPG key ครบ 2 ตัวสำหรับ trusty squid repo
 แก้ permission ของ /var/log/squid3 ให้ proxy user
 เพิ่มไฟล์ EasyRSA-3.0.1.tgz ที่หายไป (OpenVPN ติดตั้งไม่ได้)
 แก้ typo apt-get update-y
