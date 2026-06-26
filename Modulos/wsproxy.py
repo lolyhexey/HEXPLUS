@@ -11,11 +11,13 @@ except:
 BUFLEN = 4096 * 4
 TIMEOUT = 60
 # Optional positional args:
-#   argv[2] = DEFAULT_HOST  (host:port to tunnel to when client omits X-Real-Host)
-#   argv[3] = RESPONSE_MSG  (status text inserted into the spoof 101 handshake)
+#   argv[2] = DEFAULT_HOST    (host:port to tunnel to when client omits X-Real-Host)
+#   argv[3] = STATUS_CODE     (HTTP code in the spoof handshake, e.g. 101, 200, 400, 520)
+#   argv[4] = STATUS_MSG      (text after the code; can include HTML payload spoof)
 DEFAULT_HOST = sys.argv[2] if len(sys.argv) > 2 and sys.argv[2] else '127.0.0.1:22'
-_response_msg = sys.argv[3] if len(sys.argv) > 3 and sys.argv[3] else 'HEXPLUS'
-RESPONSE = ('HTTP/1.1 101 <font color="null">' + _response_msg + '</font>\r\n\r\n').encode()
+_status_code = sys.argv[3] if len(sys.argv) > 3 and sys.argv[3] else '101'
+_status_msg = sys.argv[4] if len(sys.argv) > 4 and sys.argv[4] else '<font color="null">HEXPLUS</font>'
+RESPONSE = ('HTTP/1.1 ' + _status_code + ' ' + _status_msg + '\r\n\r\n').encode()
 
 log_lock = asyncio.Lock()
 
