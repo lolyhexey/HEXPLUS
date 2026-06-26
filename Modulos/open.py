@@ -12,7 +12,24 @@ except:
 PASS = ''
 BUFLEN = 8196 * 8
 TIMEOUT = 60
-DEFAULT_HOST = '0.0.0.0:1194'
+
+
+def _read_openvpn_port(default=1194):
+    try:
+        with open('/etc/openvpn/server.conf', 'r') as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith('#'):
+                    continue
+                parts = line.split()
+                if len(parts) >= 2 and parts[0] == 'port':
+                    return int(parts[1])
+    except (FileNotFoundError, PermissionError, ValueError, OSError):
+        pass
+    return default
+
+
+DEFAULT_HOST = '0.0.0.0:' + str(_read_openvpn_port())
 RESPONSE = b"HTTP/1.1 200 Connection established\r\nContent-length: 0\r\n\r\n"
 
 log_lock = asyncio.Lock()

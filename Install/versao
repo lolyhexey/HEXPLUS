@@ -1,7 +1,8 @@
-VERSAO: 44
+VERSAO: 45
 
 @lolyhexey
 
+SOCKS OPENVPN (open.py) อ่าน OpenVPN port จาก server.conf เอง ไม่ hardcode 1194 แล้ว
 แก้ criarusuario newclient ใช้ชื่อไฟล์ cert ผิด (ca.pem→ca.crt) + ใส่ server cert แทน client cert
 แก้ criarteste ห้ามชื่อขึ้นต้นด้วยตัวเลข + error capture stderr
 ลบ comp-lzo yes ออกจาก OpenVPN config (แตก OpenVPN 2.6 / Ubuntu 24)
