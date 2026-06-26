@@ -1,7 +1,8 @@
-VERSAO: 48
+VERSAO: 49
 
 @lolyhexey
 
+แก้บั๊ก PORTAS โชว์ args ของ wsproxy.py เกินมา + แก้ xargs unmatched quote
 wsproxy.py เลือก STATUS CODE ได้ตอน start: 101/200/400/520/custom พร้อม default msg ของแต่ละ code
 wsproxy.py ถาม DEFAULT HOST + RESPONSE MSG ตอน start ปรับแต่งได้ + มี default ให้
 เมนู PROXY SOCKS เพิ่มบรรทัด PORTAS สรุปด้านบน + เก็บ (พอร์ต: ...) inline ของเดิมไว้ด้วย

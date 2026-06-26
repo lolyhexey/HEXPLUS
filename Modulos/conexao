@@ -1465,9 +1465,17 @@ exit 0' >$RCLOCAL
 		clear
 		echo -e "\E[44;1;37m            จัดการ PROXY SOCKS             \E[0m"
 		echo ""
-		pt_proxy=$(sed -nE "s|.*screen -dmS proxy python3? /etc/SSHPlus/proxy\.py ([0-9]+).*|\1|p" /etc/autostart 2>/dev/null | head -1)
-		pt_ws=$(sed -nE "s|.*screen -dmS ws python3? /etc/SSHPlus/wsproxy\.py ([0-9]+).*|\1|p" /etc/autostart 2>/dev/null | head -1)
-		pt_open=$(sed -nE "s|.*screen -dmS openpy python3? /etc/SSHPlus/open\.py ([0-9]+).*|\1|p" /etc/autostart 2>/dev/null | head -1)
+		_extract_pt() {
+			local sname="$1" script="$2" line rest
+			line=$(grep "screen -dmS $sname " /etc/autostart 2>/dev/null | head -1)
+			[[ -z "$line" ]] && return
+			rest="${line#*${script} }"
+			rest="${rest%% *}"
+			[[ "$rest" =~ ^[0-9]+$ ]] && echo "$rest"
+		}
+		pt_proxy=$(_extract_pt proxy proxy.py)
+		pt_ws=$(_extract_pt ws wsproxy.py)
+		pt_open=$(_extract_pt openpy open.py)
 		[[ $(screen -list | grep -wc 'proxy') != '0' ]] && var_sks1="\033[1;32m◉" || var_sks1="\033[1;31m○"
 		[[ $(screen -list | grep -wc 'ws') != '0' ]] && var_sks2="\033[1;32m◉" || var_sks2="\033[1;31m○"
 		[[ $(screen -list | grep -wc 'openpy') != '0' ]] && sksop="\033[1;32m◉" || sksop="\033[1;31m○"
@@ -1478,7 +1486,7 @@ exit 0' >$RCLOCAL
 		[[ "$var_sks1" == *◉* && -n "$pt_proxy" ]] && _all_pts="$_all_pts $pt_proxy"
 		[[ "$var_sks2" == *◉* && -n "$pt_ws" ]] && _all_pts="$_all_pts $pt_ws"
 		[[ "$sksop" == *◉* && -n "$pt_open" ]] && _all_pts="$_all_pts $pt_open"
-		_all_pts=$(echo "$_all_pts" | xargs)
+		_all_pts="${_all_pts# }"
 		[[ -n "$_all_pts" ]] && echo -e "\033[1;33mPORTAS\033[1;37m: \033[1;32m$_all_pts"
 		echo ""
 		echo -e "\033[1;31m[\033[1;36m1\033[1;31m] \033[1;37m• \033[1;33mSOCKS SSH $var_sks1$lbl_pt1 \033[0m"
